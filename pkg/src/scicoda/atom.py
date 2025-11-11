@@ -53,6 +53,7 @@ def autodock_atom_types(
 
 
 def symbols(
+    dummy: str | None = None,
     schema: bool = False,
     cache: bool = True
 ) -> np.ndarray | tuple[np.ndarray, dict]:
@@ -60,6 +61,10 @@ def symbols(
 
     Parameters
     ----------
+    dummy
+        If provided, include the given string as a dummy element
+        at the start of the returned array (index 0).
+        This is useful for 1-based indexing by atomic number.
     schema
         Return the JSON Schema of the data along with the data.
     cache
@@ -76,7 +81,10 @@ def symbols(
     Otherwise, only the data is returned.
     """
     file = data.get("atom", "symbols", cache=cache)
-    array = np.array(file["data"])
+    file_data = file["data"]
+    if dummy is not None:
+        file_data.insert(0, dummy)
+    array = np.array(file_data)
     if schema:
         return array, file["schema"]
     return array
