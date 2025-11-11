@@ -1,22 +1,26 @@
-
 [build-system]
 requires = ["setuptools>=61.0", "versioningit"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "SciCoDa"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "pkgdata >=0.1,<0.2",
+    "pyserials >=0.1,<0.2",
+]
 
-# ----------------------------------------- setuptools -------------------------------------------
+[project.optional-dependencies]
+update = [
+    "pandas",
+    "sciapi",
+    "openmm",
+]
+
 [tool.setuptools]
 include-package-data = true
-zip-safe = false
 
 [tool.setuptools.packages.find]
 where = ["src"]
 namespaces = true
-
-
-# ----------------------------------------- Project Metadata -------------------------------------
-#
-[project]
-version = "0.0.0"
-name = "SciCoDa"
-requires-python = ">=3.10"
