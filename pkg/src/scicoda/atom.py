@@ -110,6 +110,10 @@ def periodic_table(cache: bool = True) -> pd.DataFrame:
     ----------
     - [PubChem Periodic Table](https://pubchem.ncbi.nlm.nih.gov/periodic-table/)
     - [IUPAC Cookbook](https://iupac.github.io/WFChemCookbook/datasources/pubchem_ptable.html)
+
+    See Also
+    --------
+    - [Mendeleev Python Package](https://mendeleev.readthedocs.io)
     """
     return data.get("atom", name="periodic_table", extension="parquet", cache=cache)
 
