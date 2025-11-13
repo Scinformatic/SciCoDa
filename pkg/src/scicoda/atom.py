@@ -52,6 +52,68 @@ def autodock_atom_types(
     return dataframe
 
 
+def periodic_table(cache: bool = True) -> pd.DataFrame:
+    """Periodic table of chemical elements.
+
+    Parameters
+    ----------
+    cache
+        Retain the data in memory after reading it
+        for faster access in subsequent calls.
+
+    Returns
+    -------
+    DataFrame containing one row per chemical element,
+    with columns:
+
+    z : int
+        Atomic number of the element.
+    symbol : str
+        Chemical symbol of the element.
+    name : str
+        Name of the element.
+    period : int
+        Period number of the element in the periodic table.
+    block : str
+        Group block of the element; one of:
+        'Alkali metal', 'Alkaline earth metal', 'Transition metal', 'Lanthanide', 'Actinide',
+        'Post-transition metal', 'Metalloid', 'Nonmetal', 'Halogen', 'Noble gas'.
+    e_config : str
+        Electron configuration of the element.
+    mass : float
+        Atomic mass of the element in unified atomic mass units (u).
+    r : float
+        Atomic (van der Waals) radius of the element in picometers (pm).
+    ie : float
+        Ionization energy of the element in electronvolts (eV).
+    ea : float
+        Electron affinity of the element in electronvolts (eV).
+    en_pauling : float
+        Electronegativity of the element.
+    ox_states : tuple[int] | None
+        Possible oxidation states of the element.
+    state : str
+        Standard state of the element at room temperature;
+        one of "solid", "liquid", or "gas".
+    mp : float
+        Melting point of the element in kelvin (K).
+    bp : float
+        Boiling point of the element in kelvin (K).
+    density : float
+        Density of the element in grams per cubic centimeter (g/cm³).
+    cpk_color : str
+        CPK hex color code for the element.
+    year : str
+        Year the element was discovered.
+
+    References
+    ----------
+    - [PubChem Periodic Table](https://pubchem.ncbi.nlm.nih.gov/periodic-table/)
+    - [IUPAC Cookbook](https://iupac.github.io/WFChemCookbook/datasources/pubchem_ptable.html)
+    """
+    return data.get("atom", name="periodic_table", extension="parquet", cache=cache)
+
+
 def symbols(
     dummy: str | None = None,
     schema: bool = False,
