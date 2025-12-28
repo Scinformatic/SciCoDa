@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, overload
 
 import pkgdata
 import pyserials
-import pandas as pd
+import polars as pl
 
 from scicoda import exception
 
 if TYPE_CHECKING:
+    from typing import Literal
     from pathlib import Path
 
 
@@ -49,7 +50,26 @@ def get_filepath(category: str, name: str, extension: str = "yaml") -> Path:
     return filepath
 
 
-def get(category: str, name: str, extension: str = "yaml", cache: bool = True) -> dict | list | pd.DataFrame:
+@overload
+def get(
+    category: str,
+    name: str,
+    extension: Literal["yaml"] = "yaml",
+    cache: bool = True
+) -> dict | list: ...
+@overload
+def get(
+    category: str,
+    name: str,
+    extension: Literal["parquet"] = "parquet",
+    cache: bool = True
+) -> pl.DataFrame: ...
+def get(
+    category: str,
+    name: str,
+    extension: Literal["yaml", "parquet"] = "yaml",
+    cache: bool = True
+) -> dict | list | pl.DataFrame:
     if (cached := _cache.get(category, {}).get(name)) is not None:
         return cached
     filepath = get_filepath(category=category, name=name, extension=extension)
@@ -61,7 +81,7 @@ def get(category: str, name: str, extension: str = "yaml", cache: bool = True) -
             fill_defaults=True,
         )
     elif extension == "parquet":
-        file = pd.read_parquet(filepath, engine="pyarrow")
+        file = pl.read_parquet(filepath)
     else:
         raise ValueError(f"Unsupported file extension: '{extension}'.")
     if cache:
