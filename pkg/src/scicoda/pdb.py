@@ -41,7 +41,7 @@ def ccd(
 
     Returns
     -------
-    A `pandas.DataFrame` containing the requested CCD table.
+    A `polars.DataFrame` containing the requested CCD table.
     """
     return data.get(
         "pdb",
@@ -85,7 +85,7 @@ def ccd_aa(
 
     Returns
     -------
-    A `pandas.DataFrame` containing the requested CCD table.
+    A `polars.DataFrame` containing the requested CCD table.
     """
     return data.get(
         "pdb",

@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 
-import pandas as pd
+import polars as pl
 import dfhelp
 
 from scicoda.data import _data_dir
@@ -19,11 +19,11 @@ def periodic_table(
     filepath: str = "atom/periodic_table.parquet",
     *,
     url: str = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/periodictable/CSV"
-) -> dict[Path, pd.DataFrame]:
+) -> dict[Path, pl.DataFrame]:
     """Download and store the periodic table from PubChem.
 
     This function retrieves the periodic table data from PubChem,
-    processes it into a DataFrame,
+    processes it into a polars DataFrame,
     and saves it as a Parquet file.
 
     Parameters
@@ -44,11 +44,11 @@ def periodic_table(
     if data_dir is None:
         data_dir = _data_dir
 
-    df = pd.read_csv(url)
+    df = pl.read_csv(url)
 
     # Convert column names from 'CamelCase' to 'snake_case'
-    df = df.rename(columns={col: _camel_to_snake(col) for col in df.columns}).rename(
-        columns={
+    df = df.rename({col: _camel_to_snake(col) for col in df.columns}).rename(
+        {
             "atomic_number": "z",
             "atomic_mass": "mass",
             "c_p_k_hex_color": "cpk_color",
@@ -69,14 +69,20 @@ def periodic_table(
 
     # Oxidation states are stored as comma-separated strings;
     # convert them to tuples of integers (or None if missing).
-    df["ox_states"] = df["ox_states"].apply(
-        lambda xs: tuple(int(x) for x in xs.split(",")) if isinstance(xs, str) else None
+    df = df.with_columns(
+        pl.col("ox_states").map_elements(
+            lambda xs: tuple(int(x) for x in xs.split(",")) if xs else None,
+            return_dtype=pl.Object
+        )
     )
 
     # Standard states are ['Gas', 'Solid', 'Liquid', 'Expected to be a Solid', 'Expected to be a Gas'],
     # convert them to lowercase and simplify the expected states.
-    df["state"] = df["state"].apply(
-        lambda s: s.lower().replace("expected to be a ", "") if isinstance(s, str) else s
+    df = df.with_columns(
+        pl.col("state").map_elements(
+            lambda s: s.lower().replace("expected to be a ", "") if s else s,
+            return_dtype=pl.String
+        )
     )
 
     # Add period column based on atomic number
@@ -97,10 +103,9 @@ def periodic_table(
             return 7
         raise ValueError(f"Invalid atomic number: {z}")
 
-    df["period"] = df["z"].apply(atomic_number_to_period)
-
-    # Convert DataFrame to use appropriate nullable types
-    df = df.convert_dtypes()
+    df = df.with_columns(
+        pl.col("z").map_elements(atomic_number_to_period, return_dtype=pl.Int64).alias("period")
+    )
 
     # Reorder columns
     column_order = [
@@ -123,7 +128,7 @@ def periodic_table(
         "cpk_color",
         "year",
     ]
-    df = df[column_order]
+    df = df.select(column_order)
 
     filepath = (Path(data_dir) / filepath).with_suffix(".parquet")
     dfhelp.write_parquet(df, filepath)
