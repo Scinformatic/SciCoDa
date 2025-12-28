@@ -32,7 +32,54 @@ def periodic_table(
         Period number in the periodic table (1-7).
     group : int | None
         Group number in the periodic table (1-18),
-        or `null` for lanthanides and actinides.
+        or `null` for lanthanides and actinides
+        (La and Ac are considered part of group 3).
+    block : str
+        Group block of the element; one of:
+        - 'actinide'
+        - 'alkali metal'
+        - 'alkaline earth metal'
+        - 'halogen'
+        - 'lanthanide'
+        - 'metalloid'
+        - 'noble gas'
+        - 'nonmetal'
+        - 'post-transition metal'
+        - 'transition metal'
+    e_config : str
+        Electron configuration of the element in standard notation,
+        e.g., '1s2', '[He]2s2 2p4'.
+    mass : float
+        Atomic mass of the element in unified atomic mass units (u).
+    r : int
+        Atomic (van der Waals) radius of the element in picometers (pm).
+    ie : float
+        Ionization energy of the element in electronvolts (eV).§§§§
+    ea : float
+        Electron affinity of the element in electronvolts (eV).
+    en_pauling : float
+        Electronegativity of the element on the Pauling scale.
+    ox_states : list[int]
+        Possible oxidation states of the element.
+    state : str
+        Standard state of the element at room temperature;
+        one of "solid", "liquid", or "gas".
+    mp : float
+        Melting point of the element in kelvin (K).
+    bp : float
+        Boiling point of the element in kelvin (K).
+    density : float
+        Density of the element in grams per cubic centimeter (g/cm³).
+    cpk_color : str
+        CPK hex color code for the element, e.g., '#FF0000' for red.
+    year : int
+        Year the element was discovered,
+        or `null` if the element was known since ancient times.
+
+    Note that some elements, especially the synthetic ones,
+    may have missing values for some properties.
+    All missing values are represented as `null`.
+
 
     References
     ----------
@@ -64,6 +111,13 @@ def periodic_table(
     # Clean and process columns
     # -------------------------
 
+    # Strip whitespace from all string columns and replace empty strings with None
+    df = df.with_columns(
+        pl.col(pl.String)
+        .str.strip_chars()
+        .replace("", None)
+    )
+
     # Lowercase 'Name'
     expr_name = (
         pl.col("Name")
@@ -86,7 +140,6 @@ def periodic_table(
     # Strip whitespace and remove '+' prefix from each element.
     expr_ox_states = (
         pl.col("OxidationStates")
-        .replace("", None)
         .str.split(",")
         .list.eval(pl.element().str.strip_chars().str.replace(r"^\+", ""))
         .cast(pl.List(pl.Int8))
@@ -104,7 +157,7 @@ def periodic_table(
         .when(col_state.str.contains("liquid")).then(pl.lit("liquid"))
         .when(col_state.str.contains("gas")).then(pl.lit("gas"))
         .otherwise(pl.lit(None))
-        .cast(pl.Categorical)
+        .cast(pl.Enum(["solid", "liquid", "gas"]))
         .alias("StandardState")
     )
 
@@ -112,7 +165,20 @@ def periodic_table(
     expr_group_block = (
         pl.col("GroupBlock")
         .str.to_lowercase()
-        .cast(pl.Categorical)
+        .cast(
+            pl.Enum([
+                'actinide',
+                'alkali metal',
+                'alkaline earth metal',
+                'halogen',
+                'lanthanide',
+                'metalloid',
+                'noble gas',
+                'nonmetal',
+                'post-transition metal',
+                'transition metal'
+            ])
+        )
         .alias("GroupBlock")
     )
 
@@ -157,16 +223,17 @@ def periodic_table(
 
     expr_group = (
         pl
-        .when(position_in_period == 1).then(1)  # Group 1 (alkali metals + H)
         .when(z == 2).then(18)  # He is group 18
+        .when((z >= 58) & (z <= 71)).then(None)  # Lanthanides
+        .when((z >= 90) & (z <= 103)).then(None)  # Actinides
+        .when(position_in_period == 1).then(1)  # Group 1 (alkali metals + H)
         .when(position_in_period == 2).then(2)  # Group 2 (alkaline earth metals)
         .when((z <= 10) & (position_in_period >= 3)).then(position_in_period + 10)  # Period 2: groups 13-18
         .when((z <= 18) & (position_in_period >= 3)).then(position_in_period + 10)  # Period 3: groups 13-18
-        .when((z >= 58) & (z <= 71)).then(None)  # Lanthanides
-        .when((z >= 90) & (z <= 103)).then(None)  # Actinides
-        # Periods 6-7: After lanthanides/actinides, subtract 14 to get correct group
-        .when(z > 71).then(position_in_period - 14)  # Period 6: Hf onwards (subtract lanthanides)
-        .when(z > 103).then(position_in_period - 14)  # Period 7: Rf onwards (subtract actinides)
+        # For periods 6-7, elements after lanthanides/actinides need adjustment
+        # Position includes the f-block (14 elements), so subtract 14
+        .when((z >= 72) & (z <= 86)).then(position_in_period - 14)  # Period 6: Hf-Rn
+        .when(z >= 104).then(position_in_period - 14)  # Period 7: Rf onwards
         .otherwise(position_in_period)  # Periods 4-5: position matches group
         .cast(pl.UInt8)
         .alias("group")
