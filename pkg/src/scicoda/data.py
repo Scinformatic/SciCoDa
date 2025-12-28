@@ -21,7 +21,7 @@ _cache: dict[str, dict] = {}
 def get_file(
     category: str,
     name: str,
-    extension: Literal["json"] = "json",
+    extension: Literal["json"],
     *,
     lazy: bool = False,
     cache: bool = True,
@@ -30,18 +30,18 @@ def get_file(
 def get_file(
     category: str,
     name: str,
-    extension: Literal["parquet"] = "parquet",
+    extension: Literal["parquet"],
     *,
-    lazy: bool = False,
+    lazy: Literal[False] = False,
     cache: bool = True,
 ) -> pl.DataFrame: ...
 @overload
 def get_file(
     category: str,
     name: str,
-    extension: Literal["parquet"] = "parquet",
+    extension: Literal["parquet"],
     *,
-    lazy: bool = True,
+    lazy: Literal[True],
     cache: bool = True,
 ) -> pl.LazyFrame: ...
 def get_file(
@@ -113,7 +113,7 @@ def get_filepath(category: str, name: str, extension: Literal["json", "parquet"]
         This corresponds to the function name that returns the data.
     extension
         File extension of the data file.
-        Default is "yaml".
+        Must be either "json" or "parquet".
 
     Returns
     -------
