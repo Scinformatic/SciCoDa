@@ -8,7 +8,7 @@ import polars as pl
 import pdbapi
 
 
-def chemical_component_dictionary() -> tuple[
+def ccd() -> tuple[
     dict[str, pl.DataFrame],
     dict[str, pl.DataFrame],
     dict[str, dict]
