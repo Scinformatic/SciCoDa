@@ -121,7 +121,7 @@ def ccd(
     comp_id = [comp_id] if isinstance(comp_id, str) else comp_id
     id_col = "id" if category == "chem_comp" else "comp_id"
     for var in variants:
-        df = data.get(
+        df = data.get_file(
             _FILE_CATEGORY_NAME,
             name=f"ccd-{category}-{var}",
             extension="parquet",
