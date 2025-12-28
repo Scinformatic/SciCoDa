@@ -16,7 +16,23 @@ def periodic_table(
 
     Returns
     -------
-    A polars DataFrame containing the processed periodic table data.
+    Polars DataFrame containing the processed periodic table data,
+    with one row per chemical element,
+    and the following columns:
+
+    z : int
+        Atomic number of the element.
+    symbol : str
+        Chemical symbol of the element (capitalized),
+        e.g., 'H' for Hydrogen, 'He' for Helium.
+    name : str
+        Name of the element in lowercase,
+        e.g., 'hydrogen', 'helium'.
+    period : int
+        Period number in the periodic table (1-7).
+    group : int | None
+        Group number in the periodic table (1-18),
+        or `null` for lanthanides and actinides.
 
     References
     ----------
@@ -148,7 +164,10 @@ def periodic_table(
         .when((z <= 18) & (position_in_period >= 3)).then(position_in_period + 10)  # Period 3: groups 13-18
         .when((z >= 58) & (z <= 71)).then(None)  # Lanthanides
         .when((z >= 90) & (z <= 103)).then(None)  # Actinides
-        .otherwise(position_in_period)  # Periods 4+: position matches group
+        # Periods 6-7: After lanthanides/actinides, subtract 14 to get correct group
+        .when(z > 71).then(position_in_period - 14)  # Period 6: Hf onwards (subtract lanthanides)
+        .when(z > 103).then(position_in_period - 14)  # Period 7: Rf onwards (subtract actinides)
+        .otherwise(position_in_period)  # Periods 4-5: position matches group
         .cast(pl.UInt8)
         .alias("group")
     )
