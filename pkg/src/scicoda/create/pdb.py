@@ -48,6 +48,8 @@ def ccd() -> tuple[
     category_dfs: dict[str, list[pl.DataFrame]] = {}
     amino_acid_comp_ids: set[str] = set()
 
+    esd_cols_suffix = "_esd_digits"
+
     problems = {}
 
     for ccd_variant in ("main", "protonation"):
@@ -65,7 +67,7 @@ def ccd() -> tuple[
             cat.df = cat.df.drop("_block")
 
             # Validate and cast the category data
-            errors = validator.validate(cat)
+            errors = validator.validate(cat, esd_col_suffix=esd_cols_suffix)
             n_errors = len(errors)
             if n_errors > 0:
                 problems.setdefault(ccd_variant, {})[cat_name] = {"validation": errors}
@@ -74,6 +76,10 @@ def ccd() -> tuple[
                     f"Found {n_errors} validation errors in category '{cat_name}' of CCD variant '{ccd_variant}': {err_types}"
                 )
             cat_df = cat.df
+
+            # Remove esd columns
+            esd_cols = [col for col in cat_df.columns if col.endswith(esd_cols_suffix)]
+            cat_df = cat_df.drop(esd_cols)
 
             if cat_name == "chem_comp_bond":
                 # Ensure consistent ordering of atom IDs in each bond
