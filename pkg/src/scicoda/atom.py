@@ -1,4 +1,5 @@
-import numpy as np
+"""Atomic datasets."""
+
 import polars as pl
 
 from scicoda import data
