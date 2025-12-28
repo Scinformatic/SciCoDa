@@ -1,26 +1,27 @@
-from io import StringIO
 from pathlib import Path
+import warnings
 
-import pandas as pd
-import sciapi
-from openmm.app.internal.pdbx.reader.PdbxReader import PdbxReader
+import polars as pl
+import pdbapi
+import ciffile
+import dfhelp
 
-from scicoda.update.io import write_df
 from scicoda.data import _data_dir
-from scicoda.update.df_overlap import same_rows_on_overlap, diff_rows_on_overlap, find_nonunique_ids
 
 
-def update_all(data_dir: Path | str | None = None):
+def update_all(data_dir: Path | str | None = None) -> dict[str, tuple[dict[Path, pl.DataFrame], dict[str, dict]]]:
     if data_dir is None:
         data_dir = _data_dir
-    ccd(data_dir=data_dir)
-    return
+    out = {
+        "ccd": ccd(data_dir=data_dir),
+    }
+    return out
 
 
 def ccd(
     data_dir: Path | str | None = None,
-    basepath: str = "pdb/ccd-"
-) -> dict[Path, pd.DataFrame]:
+    basepath: str = "pdb/ccd"
+) -> tuple[dict[Path, pl.DataFrame], dict[str, dict]]:
     """Download and store the Chemical Component Dictionary (CCD) of the PDB.
 
     This function retrieves the CCD from the RCSB PDB,
@@ -38,121 +39,149 @@ def ccd(
     -------
     A dictionary mapping file paths to their corresponding DataFrames.
     """
+
+    category_df_aa, category_df_non_aa, problems = get_ccd()
+
     if data_dir is None:
         data_dir = _data_dir
 
-    ccd_dfs, aa_dfs = (
-        _cif_to_dfs(file_content) for file_content in (
-            sciapi.pdb.file.chemical_component_dictionary(
-                variant=variant
-            ).decode()
-            for variant in ("main", "protonation")
-        )
-    )
-
-    dfs = {}
-    for df_name in set(ccd_dfs.keys()).union(set(aa_dfs.keys())):
-        ccd_df = ccd_dfs.get(df_name)
-        aa_df = aa_dfs.get(df_name)
-        if ccd_df is None:
-            aa_df["is_aa_variant"] = True
-            dfs[df_name] = aa_df.convert_dtypes()
-        elif aa_df is None:
-            ccd_df["is_aa_variant"] = False
-            dfs[df_name] = ccd_df.convert_dtypes()
-        else:
-            aa_df["is_aa_variant"] = True
-            ccd_df["is_aa_variant"] = False
-            dfs[df_name] = _merge_dfs(ccd_df=ccd_df, aa_df=aa_df, df_name=df_name).convert_dtypes()
-
-    # Sanity checks
-    # 1. Make sure that for each compound in the "chem_comp_atom" table,
-    #    each atom ID variant is only used for one specific atom;
-    #    i.e., no two atoms in the same compound share the same atom ID variant.
-    viol = find_nonunique_ids(
-        dfs["chem_comp_atom"],
-        group_col="comp_id",
-        id_cols=["atom_id", "alt_atom_id", "pdbx_component_atom_id"],
-        cross_column=True,
-    )
-    if not viol.empty:
-        raise ValueError(f"Found non-unique atom IDs in chem_comp_atom:\n{viol}")
-
     dirpath = Path(data_dir)
     out = {}
-    for name, df in dfs.items():
-        filepath = (dirpath / f"{basepath}{name}").with_suffix(".parquet")
-        filepath.parent.mkdir(parents=True, exist_ok=True)
-        write_df(df, filepath=filepath)
-        out[filepath] = df
-    return out
+    for variant_suffix, cat_dfs in [("aa", category_df_aa), ("non_aa", category_df_non_aa)]:
+        for cat_name, cat_df in cat_dfs.items():
+            filepath = (dirpath / f"{basepath}-{cat_name}-{variant_suffix}").with_suffix(".parquet")
+            filepath.parent.mkdir(parents=True, exist_ok=True)
+            dfhelp.write_parquet(cat_df, filepath=filepath)
+            out[filepath] = cat_df
+    return out, problems
 
 
-def _merge_dfs(ccd_df: pd.DataFrame, aa_df: pd.DataFrame, df_name: str) -> pd.DataFrame:
+def get_ccd() -> tuple[
+    dict[str, pl.DataFrame],
+    dict[str, pl.DataFrame],
+    dict[str, dict]
+]:
+    """Download and store the Chemical Component Dictionary (CCD) of the PDB.
 
-    # Select the dataframe with more columns as the main one
-    col_dif = list(aa_df.columns.difference(ccd_df.columns))
-    if len(col_dif) == 0:
-        df1 = ccd_df
-        df2 = aa_df
-    else:
-        df1 = aa_df
-        df2 = ccd_df
+    This function retrieves the CCD from the RCSB PDB,
+    processes it into individual tables, and saves each table as a Parquet file.
 
-    # Select common components in both dataframes
-    id_col = "id" if df_name == "chem_comp" else "comp_id"
-    df1_mask = df1[id_col].isin(df2[id_col])
-    df2_mask = df2[id_col].isin(df1[id_col])
-    df1_common = df1[df1_mask]
-    df2_common = df2[df2_mask]
+    Parameters
+    ----------
+    data_dir
+        Data directory of the package.
+    basepath
+        Base path for storing the CCD tables. Each table will be saved
+        with this base path followed by the table name and a `.parquet` extension.
 
-    # Make sure the main dataframe has more rows than the other dataframe
-    exclude = ["pdbx_modified_date", "is_aa_variant"]
-    if not same_rows_on_overlap(df1_common, df2_common, exclude=exclude):
-        raise ValueError(diff_rows_on_overlap(df1_common, df2_common, exclude=exclude))
+    Returns
+    -------
+    A dictionary mapping file paths to their corresponding DataFrames.
+    """
 
-    # Merge two dataframes
-    sub_df2 = df2[~df2_mask]
-    if sub_df2.empty:
-        return df1
-    return pd.concat([df1, sub_df2]).reset_index(drop=True)
+    # Create a PDBx/mmCIF validator
+    validator = ciffile.validator(
+        ciffile.read(pdbapi.file.dictionary()).to_validator_dict()
+    )
 
+    category_dfs: dict[str, list[pl.DataFrame]] = {}
+    amino_acid_comp_ids: set[str] = set()
 
-def _cif_to_dfs(file_content: str) -> dict[str, pd.DataFrame]:
-    """Read a CIF file and return a dictionary of DataFrames."""
-    data = _read_cif(file_content)
-    df_list = {}
-    for d in data:
-        for obj_name in d.getObjNameList():
-            obj = d.getObj(obj_name)
-            _, column_names, rows = obj.get()
-            df = pd.DataFrame(rows, columns=column_names)
-            df_list.setdefault(obj_name, []).append(df)
+    problems = {}
 
-    dfs = {}
-    for name, dfs_ in df_list.items():
-        df = (
-            pd.concat(dfs_, ignore_index=True, copy=False)
-            .replace("?", pd.NA)
-            .convert_dtypes()
+    for ccd_variant in ("main", "protonation"):
+        ccd_bytes = pdbapi.file.ccd(variant=ccd_variant)
+        ccd_file = ciffile.read(ccd_bytes)
+        ccd_categories = ccd_file.category()
+        for cat_name, cat in ccd_categories.items():
+            id_col = "id" if cat_name == "chem_comp" else "comp_id"
+
+            # Ensure that the block code matches the ID (case-insensitive) and remove the _block column
+            if not (cat.df["_block"].str.to_lowercase() == cat.df[id_col].str.to_lowercase()).all():
+                raise ValueError(
+                    f"Mismatching block code and ID in category {cat_name} of CCD variant {ccd_variant}."
+                )
+            cat.df = cat.df.drop("_block")
+
+            # Validate and cast the category data
+            errors = validator.validate(cat)
+            n_errors = len(errors)
+            if n_errors > 0:
+                problems.setdefault(ccd_variant, {})[cat_name] = {"validation": errors}
+                err_types = errors["type"].unique().to_list()
+                warnings.warn(
+                    f"Found {n_errors} validation errors in category '{cat_name}' of CCD variant '{ccd_variant}': {err_types}"
+                )
+            cat_df = cat.df
+
+            if cat_name == "chem_comp_bond":
+                # Ensure consistent ordering of atom IDs in each bond
+                cat_df = cat_df.with_columns(
+                    pl.min_horizontal("atom_id_1", "atom_id_2").alias("atom_id_1"),
+                    pl.max_horizontal("atom_id_1", "atom_id_2").alias("atom_id_2"),
+                )
+
+            category_dfs.setdefault(cat_name, []).append(cat.df)
+            if ccd_variant == "protonation" and cat_name == "chem_comp":
+                amino_acid_comp_ids.update(cat.df[id_col].to_list())
+
+    category_df_aa: dict[str, pl.DataFrame] = {}
+    category_df_non_aa: dict[str, pl.DataFrame] = {}
+    for cat_name, variant_dfs in category_dfs.items():
+        id_cols = _CCD_CATEGORY_CHECK.get(cat_name, {}).get("id_cols")
+        if not id_cols:
+            if len(variant_dfs) == 1:
+                id_cols = list(variant_dfs[0].columns)
+            else:
+                id_cols = list(set.intersection(*[set(df.columns) for df in variant_dfs]))
+        variant_dfs_dedup = []
+        for variante_name, df in zip(("main", "protonation"), variant_dfs):
+            df_dedup, dupes = dfhelp.deduplicate_by_cols(df, id_cols)
+            n_dupes = len(dupes)
+            if n_dupes > 0:
+                problems.setdefault(variante_name, {}).setdefault(cat_name, {})["duplicates"] = dupes
+                warnings.warn(
+                    f"Found {n_dupes} duplicate rows in category '{cat_name}' "
+                    f"of CCD variant '{variante_name}'; keeping first occurrence.",
+                )
+            variant_dfs_dedup.append(df_dedup)
+        merged_df, conflicts = (
+            (variant_dfs_dedup[0], [])
+            if len(variant_dfs_dedup) == 1 else
+            dfhelp.merge_rows(variant_dfs_dedup[0], variant_dfs_dedup[1], id_cols)
         )
-        for col in df.select_dtypes(include=["object", "string"]).columns:
-            try:
-                df[col] = pd.to_numeric(df[col])
-            except (ValueError, TypeError):
-                if df[col].dropna().isin(["Y", "N"]).all():
-                    df[col] = (
-                        df[col]
-                        .map({"Y": True, "N": False})
-                        .astype("boolean")
-                    )
-        dfs[name] = df
-    return dfs
+        n_conflicts = len(conflicts)
+        if n_conflicts > 0:
+            problems.setdefault("merge", {})[cat_name] = conflicts
+            warnings.warn(
+                f"Found {n_conflicts} conflicting rows in category '{cat_name}' of CCD variants; "
+                f"keeping first occurrence.",
+            )
+        id_col = "id" if cat_name == "chem_comp" else "comp_id"
+        is_aa_variant = merged_df[id_col].is_in(amino_acid_comp_ids)
+        category_df_aa[cat_name] = merged_df.filter(is_aa_variant)
+        category_df_non_aa[cat_name] = merged_df.filter(~is_aa_variant)
+
+    return category_df_aa, category_df_non_aa, problems
 
 
-def _read_cif(file_content: str) -> list:
-    """Read a CIF file and return a list of data block objects."""
-    reader = PdbxReader(StringIO(file_content))
-    data = []
-    reader.read(data)
-    return data
+_CCD_CATEGORY_CHECK = {
+    "chem_comp": {
+        "id_cols": ["id"],
+    },
+    "chem_comp_atom": {
+        "id_cols": ["comp_id", "atom_id"],
+    },
+    "chem_comp_bond": {
+        "id_cols": ["comp_id", "atom_id_1", "atom_id_2"],
+    },
+    "pdbx_chem_comp_atom_related": {
+        "id_cols": ["comp_id", "atom_id", "related_comp_id", "related_atom_id"],
+    },
+    "pdbx_chem_comp_pcm": {
+        "id_cols": ["comp_id", "pcm_id"],
+    },
+    "pdbx_chem_comp_synonyms": {
+        "id_cols": ["comp_id", "ordinal"],
+    }
+}
