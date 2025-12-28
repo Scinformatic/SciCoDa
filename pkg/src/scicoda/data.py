@@ -80,6 +80,30 @@ def get(
     cache: bool = True,
     lazy: bool = False
 ) -> dict | list | pl.DataFrame | pl.LazyFrame:
+    """Get a data file from the package data.
+
+    Parameters
+    ----------
+    category
+        Category of the data file.
+        This corresponds to the module name where the data can be accessed.
+    name
+        Name of the data file.
+        This corresponds to the function name that returns the data.
+    extension
+        File extension of the data file.
+        Default is "yaml".
+    cache
+        Retain the data in memory after reading it
+        for faster access in subsequent calls.
+    lazy
+        If `extension` is "parquet",
+        return a `polars.LazyFrame` instead of a `polars.DataFrame`.
+
+    Returns
+    -------
+    The data file content.
+    """
     if (cached := _cache.get(category, {}).get(name)) is not None:
         return cached
     filepath = get_filepath(category=category, name=name, extension=extension)
