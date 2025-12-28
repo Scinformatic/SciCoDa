@@ -1,10 +1,15 @@
 [build-system]
+
 requires = ["setuptools>=61.0", "versioningit"]
 build-backend = "setuptools.build_meta"
 
+
 [project]
+
 name = "SciCoDa"
 version = "0.2.3"
+description = "Scientific Constants and Datasets for Computational Sciences"
+
 requires-python = ">=3.10"
 dependencies = [
     "pkgdata >=0.1,<0.2",
@@ -12,12 +17,56 @@ dependencies = [
     "polars >=1,<2",
     "dfhelp==0.0.1",
 ]
-
 [project.optional-dependencies]
 ccd = [
     "pdbapi",
     "ciffile",
 ]
+dev = [
+    "pytest >=7.0",
+    "pytest-cov >=4.0",
+    "pytest-xdist",
+    "mypy",
+    "ruff",
+]
+all = [
+    "SciCoDa[ccd,dev]",
+]
+
+license = {text = "MIT"}
+keywords = [
+    "scientific data",
+    "computational sciences",
+    "chemistry",
+    "biology",
+    "bioinformatics",
+    "protein data bank",
+    "periodic table",
+    "autodock",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Database",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/scinformatic/scicoda"
+Documentation = "https://github.com/scinformatic/scicoda#readme"
+Repository = "https://github.com/scinformatic/scicoda"
+"Bug Tracker" = "https://github.com/scinformatic/scicoda/issues"
+Changelog = "https://github.com/scinformatic/scicoda/releases"
 
 [tool.setuptools]
 include-package-data = true
