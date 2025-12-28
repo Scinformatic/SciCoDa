@@ -46,12 +46,12 @@ def periodic_table(
         - 'nonmetal'
         - 'post-transition metal'
         - 'transition metal'
-    e_config : str
+    econfig : str
         Electron configuration of the element in standard notation,
         e.g., '1s2', '[He]2s2 2p4'.
     mass : float
         Atomic mass of the element in unified atomic mass units (u).
-    r : int
+    vdwr : int
         Atomic (van der Waals) radius of the element in picometers (pm).
     ie : float
         Ionization energy of the element in electronvolts (eV).§§§§
@@ -59,7 +59,7 @@ def periodic_table(
         Electron affinity of the element in electronvolts (eV).
     en_pauling : float
         Electronegativity of the element on the Pauling scale.
-    ox_states : list[int]
+    oxstates : list[int]
         Possible oxidation states of the element.
     state : str
         Standard state of the element at room temperature;
@@ -70,7 +70,7 @@ def periodic_table(
         Boiling point of the element in kelvin (K).
     density : float
         Density of the element in grams per cubic centimeter (g/cm³).
-    cpk_color : str
+    color_cpk : str
         CPK hex color code for the element, e.g., '#FF0000' for red.
     year : int
         Year the element was discovered,
@@ -80,33 +80,33 @@ def periodic_table(
     may have missing values for some properties.
     All missing values are represented as `null`.
 
-
     References
     ----------
+    - [PubChem Periodic Table](https://pubchem.ncbi.nlm.nih.gov/periodic-table/)
     - [IUPAC Cookbook](https://iupac.github.io/WFChemCookbook/datasources/pubchem_ptable.html)
     """
-
-    schema = {
-        "AtomicNumber": pl.UInt8,  # 1-118 fits in UInt8 (0-255)
-        "Symbol": pl.String,
-        "Name": pl.String,
-        "AtomicMass": pl.Float32,  # Float32 has sufficient precision
-        "CPKHexColor": pl.String,
-        "ElectronConfiguration": pl.String,
-        "Electronegativity": pl.Float32,
-        "AtomicRadius": pl.UInt16,  # max 348 fits in UInt16 (0-65535)
-        "IonizationEnergy": pl.Float32,
-        "ElectronAffinity": pl.Float32,
-        "OxidationStates": pl.String,
-        "StandardState": pl.String,
-        "MeltingPoint": pl.Float32,
-        "BoilingPoint": pl.Float32,
-        "Density": pl.Float32,
-        "GroupBlock": pl.String,
-        "YearDiscovered": pl.String,
-    }
-    df = pl.read_csv(url, schema=schema)
-
+    df = pl.read_csv(
+        url,
+        schema={
+            "AtomicNumber": pl.UInt8,  # 1-118 fits in UInt8 (0-255)
+            "Symbol": pl.String,
+            "Name": pl.String,
+            "AtomicMass": pl.Float32,  # Float32 has sufficient precision
+            "CPKHexColor": pl.String,
+            "ElectronConfiguration": pl.String,
+            "Electronegativity": pl.Float32,
+            "AtomicRadius": pl.UInt16,  # max 348 fits in UInt16 (0-65535)
+            "IonizationEnergy": pl.Float32,
+            "ElectronAffinity": pl.Float32,
+            "OxidationStates": pl.String,
+            "StandardState": pl.String,
+            "MeltingPoint": pl.Float32,
+            "BoilingPoint": pl.Float32,
+            "Density": pl.Float32,
+            "GroupBlock": pl.String,
+            "YearDiscovered": pl.String,
+        }
+    )
 
     # Clean and process columns
     # -------------------------
@@ -239,6 +239,7 @@ def periodic_table(
         .alias("group")
     )
 
+
     # Apply all transformations
     # -------------------------
     df = df.with_columns([
@@ -252,20 +253,20 @@ def periodic_table(
         expr_group,
     ])
 
-    # Convert column names from 'CamelCase' to 'snake_case'
+    # Rename columns to desired names
     df = df.rename(
         {
             "AtomicNumber": "z",
             "Symbol": "symbol",
             "Name": "name",
             "AtomicMass": "mass",
-            "CPKHexColor": "cpk_color",
-            "ElectronConfiguration": "e_config",
+            "CPKHexColor": "color_cpk",
+            "ElectronConfiguration": "econfig",
             "Electronegativity": "en_pauling",
-            "AtomicRadius": "r",
+            "AtomicRadius": "vdwr",
             "IonizationEnergy": "ie",
             "ElectronAffinity": "ea",
-            "OxidationStates": "ox_states",
+            "OxidationStates": "oxstates",
             "StandardState": "state",
             "MeltingPoint": "mp",
             "BoilingPoint": "bp",
@@ -283,18 +284,18 @@ def periodic_table(
         "period",
         "group",
         "block",
-        "e_config",
+        "econfig",
         "mass",
-        "r",
+        "vdwr",
         "ie",
         "ea",
         "en_pauling",
-        "ox_states",
+        "oxstates",
         "state",
         "mp",
         "bp",
         "density",
-        "cpk_color",
+        "color_cpk",
         "year",
     ]
     df = df.select(column_order)
