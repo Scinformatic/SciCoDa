@@ -24,6 +24,7 @@ def get_data(category: str, name: str, cache: bool = True) -> dict | list:
 def get_schema(category: str, name: str, cache: bool = True) -> dict | list:
     return get(category, name, extension="yaml", cache=cache)["schema"]
 
+
 def get_filepath(category: str, name: str, extension: str = "yaml") -> Path:
     """Get the absolute path to a data file.
 
@@ -38,10 +39,19 @@ def get_filepath(category: str, name: str, extension: str = "yaml") -> Path:
     extension
         File extension of the data file.
         Default is "yaml".
+
+    Returns
+    -------
+    Absolute path to the data file.
+
+    Raises
+    -------
+    ScicodaFileNotFoundError
+        If the specified data file does not exist.
     """
     filepath = _data_dir / category / f"{name}.{extension}"
     if not filepath.is_file():
-        raise exception.DataFileNotFoundError(
+        raise exception.ScicodaFileNotFoundError(
             category=category,
             name=name,
             filepath=filepath,
@@ -103,6 +113,13 @@ def get(
     Returns
     -------
     The data file content.
+
+    Raises
+    -------
+    ScicodaFileNotFoundError
+        If the specified data file does not exist.
+    ScicodaInputError
+        If an unsupported file extension is specified.
     """
     if (cached := _cache.get(category, {}).get(name)) is not None:
         return cached
@@ -120,7 +137,11 @@ def get(
         else:
             file = pl.read_parquet(filepath)
     else:
-        raise ValueError(f"Unsupported file extension: '{extension}'.")
+        raise exception.ScicodaInputError(
+            parameter="extension",
+            argument=extension,
+            message_detail="Unsupported file extension."
+        )
     if cache:
         _cache.setdefault(category, {})[name] = file
     return file
