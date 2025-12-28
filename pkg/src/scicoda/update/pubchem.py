@@ -2,9 +2,9 @@ from pathlib import Path
 import re
 
 import pandas as pd
+import dfhelp
 
 from scicoda.data import _data_dir
-from scicoda.update.io import write_df
 
 
 def update_all(data_dir: Path | str | None = None):
@@ -126,7 +126,7 @@ def periodic_table(
     df = df[column_order]
 
     filepath = (Path(data_dir) / filepath).with_suffix(".parquet")
-    write_df(df, filepath)
+    dfhelp.write_parquet(df, filepath)
     return {filepath: df}
 
 
