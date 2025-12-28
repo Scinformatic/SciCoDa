@@ -41,9 +41,9 @@ def ccd(
     ----
     The CCD datasets are **not bundled** with the package due to their size (~70 MB).
     To use this function, you must first install the optional dependencies:
-    
+
         pip install scicoda[ccd]
-    
+
     The first time you call this function, the CCD datasets will be automatically
     downloaded from the PDB, processed, and saved locally for future use.
     This one-time download may take a few minutes depending on your internet connection.
