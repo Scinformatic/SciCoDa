@@ -38,7 +38,7 @@ def periodic_table(
         e.g., 'hydrogen', 'helium'.
     period : int
         Period number in the periodic table (1-7).
-    group : int | None
+    group : int
         Group number in the periodic table (1-18),
         or `null` for lanthanides and actinides
         (La and Ac are considered part of group 3).
