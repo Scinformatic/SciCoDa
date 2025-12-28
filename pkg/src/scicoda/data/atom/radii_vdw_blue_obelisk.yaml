@@ -1,0 +1,139 @@
+schema:
+  title: Atomic Van der Waals Radii
+  summary: Van der Waals radii of atoms.
+  description: |
+    This is an array of atomic van der Waals radii,
+    sorted by atomic number from 1 to 118.
+    Values are taken from the
+    [Blue Obelisk Data Repository](https://github.com/AAriam/bodr/blob/29ce17071c71b2d4d5ee81a2a28f0407331f1624/bodr/elements/elements.xml).
+    For elements beyond atomic number 109 (Ds to Og),
+    a default value of 2.00 Å is used to fill in missing data.
+  $comment: |
+    For reference, see: https://github.com/rdkit/rdkit/issues/1831
+  type: array
+  items:
+    title: Atomic Van der Waals Radius
+    summary: Van der Waals radius of an atom.
+    description: |
+      Van der Waals radius of an atom in Ångströms (Å).
+    type: number
+    exclusiveMinimum: 0
+data:
+  - 120  # H
+  - 140  # He
+  - 220  # Li
+  - 190  # Be
+  - 180  # B
+  - 170  # C
+  - 160  # N
+  - 155  # O
+  - 150  # F
+  - 154  # Ne
+  - 240  # Na
+  - 220  # Mg
+  - 210  # Al
+  - 210  # Si
+  - 195  # P
+  - 180  # S
+  - 180  # Cl
+  - 188  # Ar
+  - 280  # K
+  - 240  # Ca
+  - 229  # Sc
+  - 215  # Ti
+  - 204  # V
+  - 204  # Cr
+  - 204  # Mn
+  - 204  # Fe
+  - 200  # Co
+  - 200  # Ni
+  - 200  # Cu
+  - 210  # Zn
+  - 210  # Ga
+  - 210  # Ge
+  - 204  # As
+  - 190  # Se
+  - 190  # Br
+  - 202  # Kr
+  - 290  # Rb
+  - 254  # Sr
+  - 240  # Y
+  - 229  # Zr
+  - 215  # Nb
+  - 210  # Mo
+  - 204  # Tc
+  - 204  # Ru
+  - 200  # Rh
+  - 204  # Pd
+  - 210  # Ag
+  - 220  # Cd
+  - 220  # In
+  - 225  # Sn
+  - 220  # Sb
+  - 210  # Te
+  - 210  # I
+  - 216  # Xe
+  - 300  # Cs
+  - 270  # Ba
+  - 250  # La
+  - 248  # Ce
+  - 247  # Pr
+  - 245  # Nd
+  - 243  # Pm
+  - 242  # Sm
+  - 240  # Eu
+  - 238  # Gd
+  - 237  # Tb
+  - 235  # Dy
+  - 233  # Ho
+  - 231  # Er
+  - 229  # Tm
+  - 227  # Yb
+  - 227  # Lu
+  - 225  # Hf
+  - 220  # Ta
+  - 210  # W
+  - 204  # Re
+  - 200  # Os
+  - 200  # Ir
+  - 204  # Pt
+  - 210  # Au
+  - 204  # Hg
+  - 220  # Tl
+  - 229  # Pb
+  - 229  # Bi
+  - 200  # Po
+  - 200  # At
+  - 200  # Rn
+  - 200  # Fr
+  - 200  # Ra
+  - 200  # Ac
+  - 240  # Th
+  - 200  # Pa
+  - 229  # U
+  - 200  # Np
+  - 200  # Pu
+  - 200  # Am
+  - 200  # Cm
+  - 200  # Bk
+  - 200  # Cf
+  - 200  # Es
+  - 200  # Fm
+  - 200  # Md
+  - 200  # No
+  - 200  # Lr
+  - 200  # Rf
+  - 200  # Db
+  - 200  # Sg
+  - 200  # Bh
+  - 200  # Hs
+  - 200  # Mt
+  - 200  # Ds
+  - 200  # Rg
+  - 200  # Cn
+  - 200  # Nh
+  - 200  # Fl
+  - 200  # Mc
+  - 200  # Lv
+  - 200  # Ts
+  - 200  # Og
