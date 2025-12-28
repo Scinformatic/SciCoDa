@@ -38,7 +38,7 @@ class TestGet:
 
     def test_yaml_file(self):
         """Test loading a YAML file."""
-        result = data.get("atom", "autodock_atom_types", extension="yaml", cache=False)
+        result = data.get_file("atom", "autodock_atom_types", extension="yaml", cache=False)
         assert isinstance(result, dict)
         assert "data" in result
         assert "schema" in result
@@ -59,7 +59,7 @@ class TestGet:
     def test_unsupported_extension(self):
         """Test that unsupported extensions raise an error."""
         with pytest.raises(exception.ScicodaInputError) as exc_info:
-            data.get("atom", "autodock_atom_types", extension="txt", cache=False)
+            data.get_file("atom", "autodock_atom_types", extension="txt", cache=False)
 
         assert "extension" in str(exc_info.value)
 
@@ -69,10 +69,10 @@ class TestGet:
         data._cache.clear()
 
         # First call should load from file
-        result1 = data.get("atom", "autodock_atom_types", extension="yaml", cache=True)
+        result1 = data.get_file("atom", "autodock_atom_types", extension="yaml", cache=True)
 
         # Second call should return cached version
-        result2 = data.get("atom", "autodock_atom_types", extension="yaml", cache=True)
+        result2 = data.get_file("atom", "autodock_atom_types", extension="yaml", cache=True)
 
         # Should be the same object (cached)
         assert result1 is result2
@@ -87,7 +87,7 @@ class TestGet:
         data._cache.clear()
 
         # Load without caching
-        result = data.get("atom", "autodock_atom_types", extension="yaml", cache=False)
+        result = data.get_file("atom", "autodock_atom_types", extension="yaml", cache=False)
 
         # Cache should be empty
         assert len(data._cache.get("atom", {})) == 0
@@ -102,7 +102,7 @@ class TestParquetLoading:
     )
     def test_load_parquet_eager(self):
         """Test loading a Parquet file eagerly."""
-        result = data.get("atom", "periodic_table", extension="parquet", cache=False, lazy=False)
+        result = data.get_file("atom", "periodic_table", extension="parquet", cache=False, lazy=False)
         assert isinstance(result, pl.DataFrame)
         assert len(result) > 0
         assert "symbol" in result.columns
@@ -113,7 +113,7 @@ class TestParquetLoading:
     )
     def test_load_parquet_lazy(self):
         """Test loading a Parquet file lazily."""
-        result = data.get("atom", "periodic_table", extension="parquet", cache=False, lazy=True)
+        result = data.get_file("atom", "periodic_table", extension="parquet", cache=False, lazy=True)
         assert isinstance(result, pl.LazyFrame)
         # Collect to verify it's valid
         df = result.collect()
