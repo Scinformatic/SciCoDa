@@ -10,7 +10,7 @@ name = "SciCoDa"
 version = "0.3.0"
 description = "Scientific Constants and Datasets for Computational Sciences"
 
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "pkgdata >=0.1,<0.2",
     "pyserials >=0.1,<0.2",
