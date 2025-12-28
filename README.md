@@ -26,11 +26,16 @@ pip install scicoda
 
 ### With Optional Dependencies
 
-For PDB data downloading and processing:
+For PDB Chemical Component Dictionary (CCD) access:
 
 ```bash
 pip install "scicoda[ccd]"
 ```
+
+**Note:** CCD datasets are **not bundled** with the package due to their size (~70 MB). 
+The optional `ccd` dependencies are required to download and process the data. 
+The first time you call `scicoda.pdb.ccd()`, the datasets will be automatically 
+downloaded from the PDB and saved locally for future use.
 
 ## Quick Start
 
@@ -62,6 +67,9 @@ print(hb_acceptors)
 ### PDB Chemical Component Dictionary
 
 ```python
+# Note: Requires pip install "scicoda[ccd]"
+# First call will auto-download CCD data (~70 MB, one-time)
+
 # Get chemical component information
 atp = scicoda.pdb.ccd(comp_id="ATP", category="chem_comp")
 print(atp)
@@ -113,6 +121,9 @@ Returns AutoDock4 atom type definitions.
 #### `ccd(comp_id, category, variant, cache) -> pl.DataFrame`
 
 Retrieves data from the PDB Chemical Component Dictionary.
+
+**Important:** Requires `pip install "scicoda[ccd]"`. CCD datasets (~70 MB) are not 
+bundled and will be auto-downloaded on first use.
 
 **Parameters:**
 - `comp_id` (str | list[str] | None): Component ID(s) to filter by
@@ -179,9 +190,11 @@ df = scicoda.pdb.ccd(comp_id=["ATP", "ADP", "AMP"], category="chem_comp_atom")
 
 ### Optional Dependencies
 
-For CCD data updates:
+For CCD data access (required to download and process CCD datasets):
 - pdbapi
 - ciffile
+
+Install with: `pip install "scicoda[ccd]"`
 
 ## Development
 
