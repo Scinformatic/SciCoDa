@@ -40,7 +40,7 @@ def ccd() -> tuple[
         for that category.
     """
 
-    # Create a PDBx/mmCIF validator
+    # Create a PDBx/mmCIF validator to validate and cast category data
     validator = ciffile.validator(
         ciffile.read(pdbapi.file.dictionary()).to_validator_dict()
     )
@@ -48,6 +48,7 @@ def ccd() -> tuple[
     category_dfs: dict[str, list[pl.DataFrame]] = {}
     amino_acid_comp_ids: set[str] = set()
 
+    # Suffix for estimated standard deviation columns
     esd_cols_suffix = "_esd_digits"
 
     problems = {}
@@ -77,10 +78,12 @@ def ccd() -> tuple[
                 )
             cat_df = cat.df
 
-            # Remove esd columns
+            # Remove esd columns (estimated standard deviations)
             esd_cols = [col for col in cat_df.columns if col.endswith(esd_cols_suffix)]
             cat_df = cat_df.drop(esd_cols)
 
+            # For bonds, normalize atom ordering to ensure consistent representation
+            # (e.g., bond between atom1-atom2 is same as atom2-atom1)
             if cat_name == "chem_comp_bond":
                 # Ensure consistent ordering of atom IDs in each bond
                 cat_df = cat_df.with_columns(
@@ -95,12 +98,16 @@ def ccd() -> tuple[
     category_df_aa: dict[str, pl.DataFrame] = {}
     category_df_non_aa: dict[str, pl.DataFrame] = {}
     for cat_name, variant_dfs in category_dfs.items():
+        # Determine ID columns for deduplication and merging
         id_cols = _CCD_CATEGORY_CHECK.get(cat_name, {}).get("id_cols")
         if not id_cols:
+            # If not specified, use all common columns across variants
             if len(variant_dfs) == 1:
                 id_cols = list(variant_dfs[0].columns)
             else:
                 id_cols = list(set.intersection(*[set(df.columns) for df in variant_dfs]))
+
+        # Deduplicate each variant DataFrame
         variant_dfs_dedup = []
         for variante_name, df in zip(("main", "protonation"), variant_dfs):
             df_dedup, dupes = dfhelp.deduplicate_by_cols(df, id_cols)
