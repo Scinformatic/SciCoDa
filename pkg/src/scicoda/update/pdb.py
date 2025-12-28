@@ -58,7 +58,7 @@ def ccd(
         whether it is from the amino acid variant or non-amino acid variant:
         `{basepath}-{category_name}-{variant_suffix}.parquet` where
         `variant_suffix` is either "aa" for amino acid components
-        or "noaa" for non-amino acid components.
+        or "non_aa" for non-amino acid components.
 
     Returns
     -------
@@ -76,7 +76,8 @@ def ccd(
 
     dirpath = Path(data_dir)
     out = {}
-    for variant_suffix, cat_dfs in [("aa", category_df_aa), ("noaa", category_df_non_aa)]:
+    # Save both amino acid and non-amino acid variants to separate parquet files
+    for variant_suffix, cat_dfs in [("aa", category_df_aa), ("non_aa", category_df_non_aa)]:
         for cat_name, cat_df in cat_dfs.items():
             filepath = (dirpath / f"{basepath}-{cat_name}-{variant_suffix}").with_suffix(".parquet")
             filepath.parent.mkdir(parents=True, exist_ok=True)
