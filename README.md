@@ -185,7 +185,6 @@ df = scicoda.pdb.ccd(comp_id=["ATP", "ADP", "AMP"], category="chem_comp_atom")
 - Python ≥ 3.10
 - polars ≥ 1.0
 - pkgdata ≥ 0.1
-- pyserials ≥ 0.1
 - dfhelp == 0.0.1
 
 ### Optional Dependencies
