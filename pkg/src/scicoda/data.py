@@ -18,12 +18,11 @@ _cache: dict[str, dict] = {}
 
 
 def get_data(category: str, name: str, cache: bool = True) -> dict | list:
-    return get(category, name, cache=cache)["data"]
+    return get(category, name, extension="yaml", cache=cache)["data"]
 
 
 def get_schema(category: str, name: str, cache: bool = True) -> dict | list:
-    return get(category, name, cache=cache)["schema"]
-
+    return get(category, name, extension="yaml", cache=cache)["schema"]
 
 def get_filepath(category: str, name: str, extension: str = "yaml") -> Path:
     """Get the absolute path to a data file.
