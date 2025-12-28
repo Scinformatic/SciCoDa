@@ -1,4 +1,4 @@
-"""Update Protein Data Bank (PDB) datasets."""
+"""Update Protein Data Bank (PDB) dataset files."""
 
 from pathlib import Path
 
