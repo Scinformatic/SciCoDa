@@ -32,9 +32,9 @@ For PDB Chemical Component Dictionary (CCD) access:
 pip install "scicoda[ccd]"
 ```
 
-**Note:** CCD datasets are **not bundled** with the package due to their size (~70 MB). 
-The optional `ccd` dependencies are required to download and process the data. 
-The first time you call `scicoda.pdb.ccd()`, the datasets will be automatically 
+**Note:** CCD datasets are **not bundled** with the package due to their size (~70 MB).
+The optional `ccd` dependencies are required to download and process the data.
+The first time you call `scicoda.pdb.ccd()`, the datasets will be automatically
 downloaded from the PDB and saved locally for future use.
 
 ## Quick Start
@@ -122,7 +122,7 @@ Returns AutoDock4 atom type definitions.
 
 Retrieves data from the PDB Chemical Component Dictionary.
 
-**Important:** Requires `pip install "scicoda[ccd]"`. CCD datasets (~70 MB) are not 
+**Important:** Requires `pip install "scicoda[ccd]"`. CCD datasets (~70 MB) are not
 bundled and will be auto-downloaded on first use.
 
 **Parameters:**
