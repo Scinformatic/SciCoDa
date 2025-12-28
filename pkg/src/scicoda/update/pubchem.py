@@ -68,21 +68,15 @@ def periodic_table(
     )
 
     # Oxidation states are stored as comma-separated strings;
-    # convert them to tuples of integers (or None if missing).
+    # convert them to lists of integers (or None if missing).
     df = df.with_columns(
-        pl.col("ox_states").map_elements(
-            lambda xs: tuple(int(x) for x in xs.split(",")) if xs else None,
-            return_dtype=pl.Object
-        )
+        pl.col("ox_states").str.split(",").cast(pl.List(pl.Int64))
     )
 
     # Standard states are ['Gas', 'Solid', 'Liquid', 'Expected to be a Solid', 'Expected to be a Gas'],
     # convert them to lowercase and simplify the expected states.
     df = df.with_columns(
-        pl.col("state").map_elements(
-            lambda s: s.lower().replace("expected to be a ", "") if s else s,
-            return_dtype=pl.String
-        )
+        pl.col("state").str.to_lowercase().str.replace("expected to be a ", "")
     )
 
     # Add period column based on atomic number
