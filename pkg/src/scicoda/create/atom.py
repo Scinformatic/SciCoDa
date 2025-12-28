@@ -252,11 +252,6 @@ def periodic_table(
         .alias("group")
     )
 
-    # Add van der Waals radius column from Blue Obelisk data
-    vdwr = get_file("atom", "radii_vdw_blue_obelisk", "json", cache=False)
-    expr_vdwr_bo = pl.Series(vdwr).alias("vdwr_bo")
-
-
     # Apply all transformations
     # -------------------------
     df = df.sort("AtomicNumber").with_columns([
@@ -268,8 +263,14 @@ def periodic_table(
         expr_year,
         expr_period,
         expr_group,
-        expr_vdwr_bo,
     ])
+
+    # Add van der Waals radius column from Blue Obelisk data
+    vdwr_data = get_file("atom", "radii_vdw_blue_obelisk", "json", cache=False)
+    # Create dataframe from list of dicts with "element" and "radius"
+    df_vdwr_bo = pl.DataFrame(vdwr_data)
+    # Join with periodic table using Symbol column
+    df = df.join(df_vdwr_bo, left_on="Symbol", right_on="element", how="left")
 
     # Rename columns to desired names
     df = df.rename(
@@ -291,6 +292,7 @@ def periodic_table(
             "Density": "density",
             "GroupBlock": "block",
             "YearDiscovered": "year",
+            "radius": "vdwr_bo",
         }
     )
 
