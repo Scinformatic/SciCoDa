@@ -120,44 +120,6 @@ def periodic_table(cache: bool = True) -> pl.DataFrame:
     return data.get("atom", name="periodic_table", extension="parquet", cache=cache)
 
 
-def symbols(
-    dummy: str | None = None,
-    schema: bool = False,
-    cache: bool = True
-) -> np.ndarray | tuple[np.ndarray, dict]:
-    """Chemical element symbols.
-
-    Parameters
-    ----------
-    dummy
-        If provided, include the given string as a dummy element
-        at the start of the returned array (index 0).
-        This is useful for 1-based indexing by atomic number.
-    schema
-        Return the JSON Schema of the data along with the data.
-    cache
-        Retain the data in memory after reading it
-        for faster access in subsequent calls.
-
-    Returns
-    -------
-    The data is a 1D `numpy.ndarray` of chemical element symbols,
-    sorted by atomic number from 1 to 118 (i.e. hydrogen to oganesson).
-
-    If `schema` is set to `True`, a 2-tuple is returned,
-    containing the data along its JSON Schema as a dictionary.
-    Otherwise, only the data is returned.
-    """
-    file = data.get("atom", "symbols", cache=cache)
-    file_data = file["data"]
-    if dummy is not None:
-        file_data.insert(0, dummy)
-    array = np.array(file_data)
-    if schema:
-        return array, file["schema"]
-    return array
-
-
 def van_der_waals_radii(
     schema: bool = False,
     cache: bool = True
