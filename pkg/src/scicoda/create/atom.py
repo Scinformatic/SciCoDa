@@ -259,7 +259,7 @@ def periodic_table(
 
     # Apply all transformations
     # -------------------------
-    df = df.sort("z").with_columns([
+    df = df.sort("AtomicNumber").with_columns([
         expr_name,
         expr_electron_config,
         expr_ox_states,
