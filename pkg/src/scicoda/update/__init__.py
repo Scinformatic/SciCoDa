@@ -1,4 +1,4 @@
-"""Update datasets in scicoda data package."""
+"""Update dataset files."""
 
 from pathlib import Path
 from typing import Any
@@ -7,7 +7,7 @@ from scicoda.data import _data_dir
 
 
 def update_all(data_dir: Path | str | None = None) -> dict[str, Any]:
-    """Update all datasets in the scicoda data package.
+    """Update all datasets in the package.
 
     Parameters
     ----------
