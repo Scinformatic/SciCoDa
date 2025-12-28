@@ -2,7 +2,7 @@
 
 import polars as pl
 
-from scicoda.data import get_data
+from scicoda.data import get_file
 
 
 def periodic_table(
@@ -253,7 +253,7 @@ def periodic_table(
     )
 
     # Add van der Waals radius column from Blue Obelisk data
-    vdwr = get_data("atom", "radii_vdw_blue_obelisk", cache=False)
+    vdwr = get_file("atom", "radii_vdw_blue_obelisk", "json", cache=False)
     expr_vdwr_bo = pl.Series(vdwr).alias("vdwr_bo")
 
 
