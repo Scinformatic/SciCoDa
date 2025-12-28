@@ -98,7 +98,7 @@ pytest test/ -m "online"
 The test suite covers:
 
 - ✅ **Exception Handling**: All custom exceptions and error messages
-- ✅ **Data Loading**: YAML and Parquet file loading, caching, filepath resolution
+- ✅ **Data Loading**: JSON and Parquet file loading, caching, filepath resolution
 - ✅ **Atom Module**: Periodic table and AutoDock atom types API
 - ✅ **PDB Module**: Chemical Component Dictionary API with various categories
 - ✅ **Create Module**: Data fetching and processing from online sources
@@ -195,7 +195,8 @@ pytest test/ -v --cov=scicoda
 ## Test Data
 
 Tests use:
-- **Bundled data**: YAML files in `pkg/src/scicoda/data/`
+- **Bundled data**: JSON files in `pkg/src/scicoda/data/`
+- **Data schemas**: YAML schemas in `test/data_schema/` for validation
 - **Generated data**: Temporary files created during tests
 - **Online data**: Downloaded during marked `@online` tests
 
