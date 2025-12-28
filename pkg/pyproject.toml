@@ -10,13 +10,13 @@ dependencies = [
     "pkgdata >=0.1,<0.2",
     "pyserials >=0.1,<0.2",
     "polars >=1,<2",
+    "dfhelp==0.0.1",
 ]
 
 [project.optional-dependencies]
-update = [
+ccd = [
     "pdbapi",
     "ciffile",
-    "dfhelp==0.0.1",
 ]
 
 [tool.setuptools]
