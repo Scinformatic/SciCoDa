@@ -6,7 +6,7 @@ from scicoda import data
 
 
 def autodock_atom_types(cache: bool = True) -> pl.DataFrame:
-    """AutoDock4 atom types and their properties.
+    """Get AutoDock4 atom types and their properties.
 
     These are used in the AutoDock4 software (e.g. AutoGrid4)
     and file formats (e.g. PDBQT, GPF).
@@ -58,7 +58,7 @@ def autodock_atom_types(cache: bool = True) -> pl.DataFrame:
 
 
 def periodic_table(cache: bool = True) -> pl.DataFrame:
-    """Periodic table of chemical elements.
+    """Get periodic table of chemical elements.
 
     All data is sourced from PubChem,
     unless otherwise noted.
