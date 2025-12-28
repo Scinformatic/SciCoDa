@@ -68,6 +68,7 @@ def ccd(
     Polars DataFrame containing the requested CCD table data,
     optionally filtered by the specified component ID(s).
     """
+    # Validate category name against allowed CCD category names
     if category not in get_type_args(_CCD_CATEGORY_NAMES):
         raise exception.ScicodaInputError(
             parameter="category",
@@ -76,6 +77,7 @@ def ccd(
                 f"CCD data category must be one of: {', '.join(get_type_args(_CCD_CATEGORY_NAMES))}."
             )
         )
+    # Validate variant parameter - "any" requires comp_id to be specified
     if comp_id is None and variant == "any":
         raise exception.ScicodaInputError(
             parameter="variant",
@@ -84,6 +86,7 @@ def ccd(
                 "When 'any' variant is selected, 'comp_id' must be specified."
             )
         )
+    # Check if CCD data files exist; if not, download and process them
     try:
         data.get_filepath(
             category=_FILE_CATEGORY_NAME,
