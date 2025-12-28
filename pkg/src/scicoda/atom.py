@@ -5,10 +5,7 @@ import polars as pl
 from scicoda import data
 
 
-def autodock_atom_types(
-    schema: bool = False,
-    cache: bool = True
-) -> pl.DataFrame | tuple[pl.DataFrame, dict]:
+def autodock_atom_types(cache: bool = True) -> pl.DataFrame:
     """AutoDock4 atom types and their properties.
 
     These are used in the AutoDock4 software (e.g. AutoGrid4)
@@ -16,43 +13,48 @@ def autodock_atom_types(
 
     Parameters
     ----------
-    schema
-        Return the JSON Schema of the data along with the data.
     cache
         Retain the data in memory after reading it
         for faster access in subsequent calls.
 
     Returns
     -------
-    The data is a `polars.DataFrame` with the following columns:
-    - `type`: Atom type name (e.g. "A", "C", "HD", "OA", etc.)
-    - `element`: Chemical element symbol (e.g. "C", "H", "O", etc.)
-    - `description`: Short description of the atom type, if available.
-    - `hbond_acceptor`: Whether the atom type is an H-bond acceptor (`bool`).
-    - `hbond_donor`: Whether the atom type is an H-bond donor (`bool`).
-    - `hbond_count`: Number of possible H-bonds for directionally H-bonding atoms,
+    Polars DataFrame containing one row per AutoDock4 atom type,
+    with the following columns:
+
+    type : str
+        AutoDock4 atom type name (e.g. "A", "C", "HD", "OA", etc.)
+    element : str
+        Chemical element symbol (e.g. "C", "H", "Cl", etc.) of the atom type.
+    description : str
+        Short description of the atom type, if available.
+    hbond_acceptor : bool
+        Whether the atom type is a hydrogen bond acceptor.
+    hbond_donor : bool
+        Whether the atom type is a hydrogen bond donor.
+    hbond_count : int
+        Number of possible hydrogen bonds for directionally H-bonding atoms,
         0 for non H-bonding atoms,
         and `null` for spherically H-bonding atoms.
 
-    If `schema` is set to `True`, a 2-tuple is returned,
-    containing the data along its JSON Schema as a dictionary.
-    Otherwise, only the data is returned.
-
     Notes
     -----
-    Only one of the columns `hbond_acceptor` or `hbond_donor` can be True for each atom type.
+    Only one of the columns `hbond_acceptor` or `hbond_donor`
+    can be True for each atom type.
     If both are False, `hbond_count` is 0.
     """
-    file = data.get("atom", "autodock_atom_types", cache=cache)
-    dataframe = pl.DataFrame(file["data"])
-    # Convert the "hbond_count" column to nullable integer type
-    # so that None values are represented as null
-    dataframe = dataframe.with_columns(
-        pl.col("hbond_count").cast(pl.Int64)
+    df = pl.DataFrame(
+        data.get_data("atom", "autodock_atom_types", cache=cache),
+        schema={
+            "type": pl.Utf8,
+            "element": pl.Utf8,
+            "description": pl.Utf8,
+            "hbond_acceptor": pl.Boolean,
+            "hbond_donor": pl.Boolean,
+            "hbond_count": pl.UInt8,
+        }
     )
-    if schema:
-        return dataframe, file["schema"]
-    return dataframe
+    return df
 
 
 def periodic_table(cache: bool = True) -> pl.DataFrame:
@@ -69,8 +71,8 @@ def periodic_table(cache: bool = True) -> pl.DataFrame:
 
     Returns
     -------
-    DataFrame containing one row per chemical element,
-    with columns:
+    Polars DataFrame containing one row per chemical element,
+    with the following columns:
 
     z : int
         Atomic number of the element.
