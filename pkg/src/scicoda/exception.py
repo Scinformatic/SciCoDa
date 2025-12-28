@@ -4,12 +4,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pkgdata
+
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import Any
 
 
-class SciCoDaError(Exception):
-    """Base class for all exceptions raised by this package."""
+class ScicodaError(Exception):
+    """Base class for all exceptions raised by the package."""
 
     def __init__(self, message: str):
         super().__init__(message)
@@ -17,7 +20,40 @@ class SciCoDaError(Exception):
         return
 
 
-class DataFileNotFoundError(SciCoDaError):
+class ScicodaMissingDependencyError(ScicodaError):
+    """Raised when a required dependency is missing."""
+
+    def __init__(self, message_details: str):
+        self.module = pkgdata.get_caller_module_name(stack_up=1)
+        message = (
+            f"Missing required dependency for module '{self.module}': "
+            f"{message_details}"
+        )
+        super().__init__(message)
+        return
+
+
+class ScicodaInputError(ScicodaError):
+    """Raised when an input argument is invalid."""
+
+    def __init__(
+        self,
+        parameter: str,
+        argument: Any,
+        message_detail: str,
+    ):
+        self.parameter = parameter
+        self.argument = argument
+        self.function: str = pkgdata.get_caller_name(stack_up=1)
+        message = (
+            f"Invalid input argument '{argument}' for parameter '{parameter}' "
+            f"of '{self.function}': {message_detail}"
+        )
+        super().__init__(message)
+        return
+
+
+class ScicodaFileNotFoundError(ScicodaError):
     """Raised when a requested data file is not found.
 
     Parameters
