@@ -1,0 +1,474 @@
+[
+   {
+      "element": "H",
+      "radius": 120
+   },
+   {
+      "element": "He",
+      "radius": 140
+   },
+   {
+      "element": "Li",
+      "radius": 220
+   },
+   {
+      "element": "Be",
+      "radius": 190
+   },
+   {
+      "element": "B",
+      "radius": 180
+   },
+   {
+      "element": "C",
+      "radius": 170
+   },
+   {
+      "element": "N",
+      "radius": 160
+   },
+   {
+      "element": "O",
+      "radius": 155
+   },
+   {
+      "element": "F",
+      "radius": 150
+   },
+   {
+      "element": "Ne",
+      "radius": 154
+   },
+   {
+      "element": "Na",
+      "radius": 240
+   },
+   {
+      "element": "Mg",
+      "radius": 220
+   },
+   {
+      "element": "Al",
+      "radius": 210
+   },
+   {
+      "element": "Si",
+      "radius": 210
+   },
+   {
+      "element": "P",
+      "radius": 195
+   },
+   {
+      "element": "S",
+      "radius": 180
+   },
+   {
+      "element": "Cl",
+      "radius": 180
+   },
+   {
+      "element": "Ar",
+      "radius": 188
+   },
+   {
+      "element": "K",
+      "radius": 280
+   },
+   {
+      "element": "Ca",
+      "radius": 240
+   },
+   {
+      "element": "Sc",
+      "radius": 229
+   },
+   {
+      "element": "Ti",
+      "radius": 215
+   },
+   {
+      "element": "V",
+      "radius": 204
+   },
+   {
+      "element": "Cr",
+      "radius": 204
+   },
+   {
+      "element": "Mn",
+      "radius": 204
+   },
+   {
+      "element": "Fe",
+      "radius": 204
+   },
+   {
+      "element": "Co",
+      "radius": 200
+   },
+   {
+      "element": "Ni",
+      "radius": 200
+   },
+   {
+      "element": "Cu",
+      "radius": 200
+   },
+   {
+      "element": "Zn",
+      "radius": 210
+   },
+   {
+      "element": "Ga",
+      "radius": 210
+   },
+   {
+      "element": "Ge",
+      "radius": 210
+   },
+   {
+      "element": "As",
+      "radius": 204
+   },
+   {
+      "element": "Se",
+      "radius": 190
+   },
+   {
+      "element": "Br",
+      "radius": 190
+   },
+   {
+      "element": "Kr",
+      "radius": 202
+   },
+   {
+      "element": "Rb",
+      "radius": 290
+   },
+   {
+      "element": "Sr",
+      "radius": 254
+   },
+   {
+      "element": "Y",
+      "radius": 240
+   },
+   {
+      "element": "Zr",
+      "radius": 229
+   },
+   {
+      "element": "Nb",
+      "radius": 215
+   },
+   {
+      "element": "Mo",
+      "radius": 210
+   },
+   {
+      "element": "Tc",
+      "radius": 204
+   },
+   {
+      "element": "Ru",
+      "radius": 204
+   },
+   {
+      "element": "Rh",
+      "radius": 200
+   },
+   {
+      "element": "Pd",
+      "radius": 204
+   },
+   {
+      "element": "Ag",
+      "radius": 210
+   },
+   {
+      "element": "Cd",
+      "radius": 220
+   },
+   {
+      "element": "In",
+      "radius": 220
+   },
+   {
+      "element": "Sn",
+      "radius": 225
+   },
+   {
+      "element": "Sb",
+      "radius": 220
+   },
+   {
+      "element": "Te",
+      "radius": 210
+   },
+   {
+      "element": "I",
+      "radius": 210
+   },
+   {
+      "element": "Xe",
+      "radius": 216
+   },
+   {
+      "element": "Cs",
+      "radius": 300
+   },
+   {
+      "element": "Ba",
+      "radius": 270
+   },
+   {
+      "element": "La",
+      "radius": 250
+   },
+   {
+      "element": "Ce",
+      "radius": 248
+   },
+   {
+      "element": "Pr",
+      "radius": 247
+   },
+   {
+      "element": "Nd",
+      "radius": 245
+   },
+   {
+      "element": "Pm",
+      "radius": 243
+   },
+   {
+      "element": "Sm",
+      "radius": 242
+   },
+   {
+      "element": "Eu",
+      "radius": 240
+   },
+   {
+      "element": "Gd",
+      "radius": 238
+   },
+   {
+      "element": "Tb",
+      "radius": 237
+   },
+   {
+      "element": "Dy",
+      "radius": 235
+   },
+   {
+      "element": "Ho",
+      "radius": 233
+   },
+   {
+      "element": "Er",
+      "radius": 231
+   },
+   {
+      "element": "Tm",
+      "radius": 229
+   },
+   {
+      "element": "Yb",
+      "radius": 227
+   },
+   {
+      "element": "Lu",
+      "radius": 227
+   },
+   {
+      "element": "Hf",
+      "radius": 225
+   },
+   {
+      "element": "Ta",
+      "radius": 220
+   },
+   {
+      "element": "W",
+      "radius": 210
+   },
+   {
+      "element": "Re",
+      "radius": 204
+   },
+   {
+      "element": "Os",
+      "radius": 200
+   },
+   {
+      "element": "Ir",
+      "radius": 200
+   },
+   {
+      "element": "Pt",
+      "radius": 204
+   },
+   {
+      "element": "Au",
+      "radius": 210
+   },
+   {
+      "element": "Hg",
+      "radius": 204
+   },
+   {
+      "element": "Tl",
+      "radius": 220
+   },
+   {
+      "element": "Pb",
+      "radius": 229
+   },
+   {
+      "element": "Bi",
+      "radius": 229
+   },
+   {
+      "element": "Po",
+      "radius": 200
+   },
+   {
+      "element": "At",
+      "radius": 200
+   },
+   {
+      "element": "Rn",
+      "radius": 200
+   },
+   {
+      "element": "Fr",
+      "radius": 200
+   },
+   {
+      "element": "Ra",
+      "radius": 200
+   },
+   {
+      "element": "Ac",
+      "radius": 200
+   },
+   {
+      "element": "Th",
+      "radius": 240
+   },
+   {
+      "element": "Pa",
+      "radius": 200
+   },
+   {
+      "element": "U",
+      "radius": 229
+   },
+   {
+      "element": "Np",
+      "radius": 200
+   },
+   {
+      "element": "Pu",
+      "radius": 200
+   },
+   {
+      "element": "Am",
+      "radius": 200
+   },
+   {
+      "element": "Cm",
+      "radius": 200
+   },
+   {
+      "element": "Bk",
+      "radius": 200
+   },
+   {
+      "element": "Cf",
+      "radius": 200
+   },
+   {
+      "element": "Es",
+      "radius": 200
+   },
+   {
+      "element": "Fm",
+      "radius": 200
+   },
+   {
+      "element": "Md",
+      "radius": 200
+   },
+   {
+      "element": "No",
+      "radius": 200
+   },
+   {
+      "element": "Lr",
+      "radius": 200
+   },
+   {
+      "element": "Rf",
+      "radius": 200
+   },
+   {
+      "element": "Db",
+      "radius": 200
+   },
+   {
+      "element": "Sg",
+      "radius": 200
+   },
+   {
+      "element": "Bh",
+      "radius": 200
+   },
+   {
+      "element": "Hs",
+      "radius": 200
+   },
+   {
+      "element": "Mt",
+      "radius": 200
+   },
+   {
+      "element": "Ds",
+      "radius": 200
+   },
+   {
+      "element": "Rg",
+      "radius": 200
+   },
+   {
+      "element": "Cn",
+      "radius": 200
+   },
+   {
+      "element": "Nh",
+      "radius": 200
+   },
+   {
+      "element": "Fl",
+      "radius": 200
+   },
+   {
+      "element": "Mc",
+      "radius": 200
+   },
+   {
+      "element": "Lv",
+      "radius": 200
+   },
+   {
+      "element": "Ts",
+      "radius": 200
+   },
+   {
+      "element": "Og",
+      "radius": 200
+   }
+]
