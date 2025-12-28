@@ -120,17 +120,30 @@ def ccd(
     variants = ["aa", "non_aa"] if variant == "any" else [variant]
     comp_id = [comp_id] if isinstance(comp_id, str) else comp_id
     id_col = "id" if category == "chem_comp" else "comp_id"
+
+    df_collected: pl.DataFrame = pl.DataFrame()
     for var in variants:
-        df = data.get_file(
-            _FILE_CATEGORY_NAME,
-            name=f"ccd-{category}-{var}",
-            extension="parquet",
-            cache=cache,
-            lazy=comp_id is not None,
-        )
         if comp_id is None:
-            return df.clone()
-        df_collected = df.filter(pl.col(id_col).is_in(comp_id)).collect()
-        if not df_collected.is_empty():
-            return df_collected
+            # Load entire table eagerly when no filter is specified
+            return data.get_file(
+                _FILE_CATEGORY_NAME,
+                name=f"ccd-{category}-{var}",
+                extension="parquet",
+                cache=cache,
+                lazy=False,
+            )
+        else:
+            # Use lazy loading and filter when comp_id is specified
+            df_lazy = data.get_file(
+                _FILE_CATEGORY_NAME,
+                name=f"ccd-{category}-{var}",
+                extension="parquet",
+                cache=cache,
+                lazy=True,
+            )
+            df_collected = df_lazy.filter(pl.col(id_col).is_in(comp_id)).collect()
+            if not df_collected.is_empty():
+                return df_collected
+
+    # Return empty DataFrame with columns if no matches found
     return df_collected
