@@ -54,21 +54,32 @@ def get(
     category: str,
     name: str,
     extension: Literal["yaml"] = "yaml",
-    cache: bool = True
+    cache: bool = True,
+    lazy: bool = False
 ) -> dict | list: ...
 @overload
 def get(
     category: str,
     name: str,
     extension: Literal["parquet"] = "parquet",
-    cache: bool = True
+    cache: bool = True,
+    lazy: bool = False
 ) -> pl.DataFrame: ...
+@overload
+def get(
+    category: str,
+    name: str,
+    extension: Literal["parquet"] = "parquet",
+    cache: bool = True,
+    lazy: bool = True
+) -> pl.LazyFrame: ...
 def get(
     category: str,
     name: str,
     extension: Literal["yaml", "parquet"] = "yaml",
-    cache: bool = True
-) -> dict | list | pl.DataFrame:
+    cache: bool = True,
+    lazy: bool = False
+) -> dict | list | pl.DataFrame | pl.LazyFrame:
     if (cached := _cache.get(category, {}).get(name)) is not None:
         return cached
     filepath = get_filepath(category=category, name=name, extension=extension)
@@ -80,7 +91,10 @@ def get(
             fill_defaults=True,
         )
     elif extension == "parquet":
-        file = pl.read_parquet(filepath)
+        if lazy:
+            file = pl.scan_parquet(filepath)
+        else:
+            file = pl.read_parquet(filepath)
     else:
         raise ValueError(f"Unsupported file extension: '{extension}'.")
     if cache:
