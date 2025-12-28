@@ -1,0 +1,178 @@
+[
+   {
+      "type": "H",
+      "element": "H",
+      "description": "Hydrogen (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "HD",
+      "element": "H",
+      "description": "Hydrogen (1 H-bond donor)",
+      "hbond_acceptor": false,
+      "hbond_donor": true,
+      "hbond_count": 1
+   },
+   {
+      "type": "HS",
+      "element": "H",
+      "description": "Hydrogen (spherical H-bond donor)",
+      "hbond_acceptor": false,
+      "hbond_donor": true,
+      "hbond_count": null
+   },
+   {
+      "type": "C",
+      "element": "C",
+      "description": "Carbon (aliphatic, non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "A",
+      "element": "C",
+      "description": "Carbon (aromatic, non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "N",
+      "element": "N",
+      "description": "Nitrogen (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "NA",
+      "element": "N",
+      "description": "Nitrogen (1 H-bond acceptor)",
+      "hbond_acceptor": true,
+      "hbond_donor": false,
+      "hbond_count": 1
+   },
+   {
+      "type": "NS",
+      "element": "N",
+      "description": "Nitrogen (spherical H-bond acceptor)",
+      "hbond_acceptor": true,
+      "hbond_donor": false,
+      "hbond_count": null
+   },
+   {
+      "type": "OA",
+      "element": "O",
+      "description": "Oxygen (2 H-bond acceptors)",
+      "hbond_acceptor": true,
+      "hbond_donor": false,
+      "hbond_count": 2
+   },
+   {
+      "type": "OS",
+      "element": "O",
+      "description": "Oxygen (spherical H-bond acceptor)",
+      "hbond_acceptor": true,
+      "hbond_donor": false,
+      "hbond_count": null
+   },
+   {
+      "type": "F",
+      "element": "F",
+      "description": "Fluorine (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "Mg",
+      "element": "Mg",
+      "description": "Magnesium (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "P",
+      "element": "P",
+      "description": "Phosphorus (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "S",
+      "element": "S",
+      "description": "Sulfur (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "SA",
+      "element": "S",
+      "description": "Sulfur (2 H-bond acceptors)",
+      "hbond_acceptor": true,
+      "hbond_donor": false,
+      "hbond_count": 2
+   },
+   {
+      "type": "Cl",
+      "element": "Cl",
+      "description": "Chlorine (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "Ca",
+      "element": "Ca",
+      "description": "Calcium (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "Mn",
+      "element": "Mn",
+      "description": "Manganese (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "Fe",
+      "element": "Fe",
+      "description": "Iron (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "Zn",
+      "element": "Zn",
+      "description": "Zinc (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "Br",
+      "element": "Br",
+      "description": "Bromine (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   },
+   {
+      "type": "I",
+      "element": "I",
+      "description": "Iodine (non H-bonding)",
+      "hbond_acceptor": false,
+      "hbond_donor": false,
+      "hbond_count": 0
+   }
+]
