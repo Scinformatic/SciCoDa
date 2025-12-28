@@ -1,4 +1,4 @@
-"""Update atomic datasets."""
+"""Update atomic dataset files."""
 
 from pathlib import Path
 
