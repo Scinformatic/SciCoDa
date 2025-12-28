@@ -49,7 +49,11 @@ def periodic_table(
     # -------------------------
 
     # Lowercase 'Name'
-    expr_name = pl.col("Name").str.to_lowercase()
+    expr_name = (
+        pl.col("Name")
+        .str.to_lowercase()
+        .alias("Name")
+    )
 
     # 'ElectronConfiguration' notations for unstable/theoretical elements
     # have suffixes like ' (calculated)' and ' (predicted)';
@@ -58,12 +62,19 @@ def periodic_table(
         pl.col("ElectronConfiguration")
         .str.replace(r" \((calculated|predicted)\)$", "")
         .str.strip_chars()
+        .alias("ElectronConfiguration")
     )
 
     # 'OxidationStates' are stored as comma-separated strings;
     # convert them to lists of integers (or None if missing).
+    # Strip whitespace and remove '+' prefix from each element.
     expr_ox_states = (
-        pl.col("OxidationStates").str.split(",").cast(pl.List(pl.Int8))
+        pl.col("OxidationStates")
+        .replace("", None)
+        .str.split(",")
+        .list.eval(pl.element().str.strip_chars().str.replace(r"^\+", ""))
+        .cast(pl.List(pl.Int8))
+        .alias("OxidationStates")
     )
 
     # 'StandardState' for unstable/theoretical elements
@@ -77,66 +88,104 @@ def periodic_table(
         .when(col_state.str.contains("liquid")).then(pl.lit("liquid"))
         .when(col_state.str.contains("gas")).then(pl.lit("gas"))
         .otherwise(pl.lit(None))
-        .cast(pl.Enum)
+        .cast(pl.Categorical)
         .alias("StandardState")
     )
 
     # 'GroupBlock' to lowercase and cast to enum
-    expr_group_block = pl.col("GroupBlock").str.to_lowercase().cast(pl.Enum)
+    expr_group_block = (
+        pl.col("GroupBlock")
+        .str.to_lowercase()
+        .cast(pl.Categorical)
+        .alias("GroupBlock")
+    )
 
-    # 'YearDiscovered' to Date, with missing values for 'Ancient' and unknown years
+    # 'YearDiscovered' convert to integer, with missing values for 'Ancient' and unknown years
     expr_year = (
         pl.col("YearDiscovered")
-        .str.strptime(pl.Date, format="%Y", strict=False)
+        .cast(pl.UInt16, strict=False)
+        .alias("YearDiscovered")
     )
 
 
     # Calculate new columns
     # ---------------------
 
-    # Add 'period' column based on atomic number
-    def atomic_number_to_period(z: int) -> int:
-        if z <= 2:
-            return 1
-        if z <= 10:
-            return 2
-        if z <= 18:
-            return 3
-        if z <= 36:
-            return 4
-        if z <= 54:
-            return 5
-        if z <= 86:
-            return 6
-        if z <= 118:
-            return 7
-        raise ValueError(f"Invalid atomic number: {z}")
+    # Add 'period' column based on atomic number (vectorized)
+    z = pl.col("AtomicNumber")
+    expr_period = (
+        pl.when(z <= 2).then(1)
+        .when(z <= 10).then(2)
+        .when(z <= 18).then(3)
+        .when(z <= 36).then(4)
+        .when(z <= 54).then(5)
+        .when(z <= 86).then(6)
+        .when(z <= 118).then(7)
+        .otherwise(None)
+        .cast(pl.UInt8)
+        .alias("period")
+    )
 
-    expr_period = pl.col("z").map_elements(atomic_number_to_period, return_dtype=pl.UInt8).alias("period")
+    # Add 'group' column based on atomic number (IUPAC numbering 1-18)
+    # Calculate position within period, then map to group
+    period_start = (  # starting atomic number (minus 1) of each period
+        pl.when(z <= 2).then(0)
+        .when(z <= 10).then(2)
+        .when(z <= 18).then(10)
+        .when(z <= 36).then(18)
+        .when(z <= 54).then(36)
+        .when(z <= 86).then(54)
+        .otherwise(86)
+    )
+    position_in_period = z - period_start
 
+    expr_group = (
+        pl
+        .when(position_in_period == 1).then(1)  # Group 1 (alkali metals + H)
+        .when(z == 2).then(18)  # He is group 18
+        .when(position_in_period == 2).then(2)  # Group 2 (alkaline earth metals)
+        .when((z <= 10) & (position_in_period >= 3)).then(position_in_period + 10)  # Period 2: groups 13-18
+        .when((z <= 18) & (position_in_period >= 3)).then(position_in_period + 10)  # Period 3: groups 13-18
+        .when((z >= 58) & (z <= 71)).then(None)  # Lanthanides
+        .when((z >= 90) & (z <= 103)).then(None)  # Actinides
+        .otherwise(position_in_period)  # Periods 4+: position matches group
+        .cast(pl.UInt8)
+        .alias("group")
+    )
 
-
-
-
+    # Apply all transformations
+    # -------------------------
+    df = df.with_columns([
+        expr_name,
+        expr_electron_config,
+        expr_ox_states,
+        expr_standard_state,
+        expr_group_block,
+        expr_year,
+        expr_period,
+        expr_group,
+    ])
 
     # Convert column names from 'CamelCase' to 'snake_case'
-    df = df.rename({col: _camel_to_snake(col) for col in df.columns}).rename(
+    df = df.rename(
         {
-            "atomic_number": "z",
-            "atomic_mass": "mass",
-            "c_p_k_hex_color": "cpk_color",
-            "electron_configuration": "e_config",
-            "electronegativity": "en_pauling",
-            "atomic_radius": "r",
-            "ionization_energy": "ie",
-            "electron_affinity": "ea",
-            "oxidation_states": "ox_states",
-            "standard_state": "state",
-            "melting_point": "mp",
-            "boiling_point": "bp",
-            "density": "density",
-            "group_block": "block",
-            "year_discovered": "year",
+            "AtomicNumber": "z",
+            "Symbol": "symbol",
+            "Name": "name",
+            "AtomicMass": "mass",
+            "CPKHexColor": "cpk_color",
+            "ElectronConfiguration": "e_config",
+            "Electronegativity": "en_pauling",
+            "AtomicRadius": "r",
+            "IonizationEnergy": "ie",
+            "ElectronAffinity": "ea",
+            "OxidationStates": "ox_states",
+            "StandardState": "state",
+            "MeltingPoint": "mp",
+            "BoilingPoint": "bp",
+            "Density": "density",
+            "GroupBlock": "block",
+            "YearDiscovered": "year",
         }
     )
 
@@ -146,6 +195,7 @@ def periodic_table(
         "symbol",
         "name",
         "period",
+        "group",
         "block",
         "e_config",
         "mass",
