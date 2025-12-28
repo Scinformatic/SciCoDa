@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 [project]
 
 name = "SciCoDa"
-version = "0.2.3"
+version = "0.3.0"
 description = "Scientific Constants and Datasets for Computational Sciences"
 
 requires-python = ">=3.10"
@@ -16,21 +16,6 @@ dependencies = [
     "pyserials >=0.1,<0.2",
     "polars >=1,<2",
     "dfhelp==0.0.1",
-]
-[project.optional-dependencies]
-ccd = [
-    "pdbapi",
-    "ciffile",
-]
-dev = [
-    "pytest >=7.0",
-    "pytest-cov >=4.0",
-    "pytest-xdist",
-    "mypy",
-    "ruff",
-]
-all = [
-    "SciCoDa[ccd,dev]",
 ]
 
 license = {text = "MIT"}
@@ -59,6 +44,22 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Topic :: Database",
     "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+ccd = [
+    "pdbapi",
+    "ciffile",
+]
+dev = [
+    "pytest >=7.0",
+    "pytest-cov >=4.0",
+    "pytest-xdist",
+    "mypy",
+    "ruff",
+]
+all = [
+    "SciCoDa[ccd,dev]",
 ]
 
 [project.urls]
