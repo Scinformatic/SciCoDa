@@ -1,27 +1,31 @@
 """Protein Data Bank (PDB) datasets."""
 
-from typing import Literal, Sequence
+from typing import Literal, Sequence, TypeAlias, get_args as get_type_args
 
 import polars as pl
 
-from scicoda import data
+from scicoda import data, exception
+
+
+_FILE_CATEGORY_NAME = "pdb"
+_CCD_CATEGORY_NAMES: TypeAlias = Literal[
+    "chem_comp",
+    "chem_comp_atom",
+    "chem_comp_bond",
+    "pdbx_chem_comp_atom_related",
+    "pdbx_chem_comp_audit",
+    "pdbx_chem_comp_descriptor",
+    "pdbx_chem_comp_feature",
+    "pdbx_chem_comp_identifier",
+    "pdbx_chem_comp_pcm",
+    "pdbx_chem_comp_related",
+    "pdbx_chem_comp_synonyms",
+]
 
 
 def ccd(
     comp_id: str | Sequence[str] | None = None,
-    category: Literal[
-        "chem_comp",
-        "chem_comp_atom",
-        "chem_comp_bond",
-        "pdbx_chem_comp_atom_related",
-        "pdbx_chem_comp_audit",
-        "pdbx_chem_comp_descriptor",
-        "pdbx_chem_comp_feature",
-        "pdbx_chem_comp_identifier",
-        "pdbx_chem_comp_pcm",
-        "pdbx_chem_comp_related",
-        "pdbx_chem_comp_synonyms",
-    ] = "chem_comp",
+    category: _CCD_CATEGORY_NAMES = "chem_comp",
     variant: Literal["aa", "non_aa", "any"] = "non_aa",
     *,
     cache: bool = True,
@@ -64,14 +68,47 @@ def ccd(
     Polars DataFrame containing the requested CCD table data,
     optionally filtered by the specified component ID(s).
     """
+    if category not in get_type_args(_CCD_CATEGORY_NAMES):
+        raise exception.ScicodaInputError(
+            parameter="category",
+            argument=category,
+            message_detail=(
+                f"CCD data category must be one of: {', '.join(get_type_args(_CCD_CATEGORY_NAMES))}."
+            )
+        )
     if comp_id is None and variant == "any":
-        raise ValueError("If 'variant' is 'any', 'comp_id' must be specified.")
+        raise exception.ScicodaInputError(
+            parameter="variant",
+            argument=variant,
+            message_detail=(
+                "When 'any' variant is selected, 'comp_id' must be specified."
+            )
+        )
+    try:
+        data.get_filepath(
+            category=_FILE_CATEGORY_NAME,
+            name=f"ccd-chem_comp-aa",
+            extension="parquet",
+        )
+    except exception.ScicodaFileNotFoundError as e:
+        try:
+            from scicoda.update.pdb import ccd
+        except ImportError as ie:
+            raise exception.ScicodaMissingDependencyError(
+                "The 'scicoda.update.pdb' module is required to download "
+                "and process the PDB Chemical Component Dictionary (CCD), "
+                "but its required dependencies are not installed. "
+                "Please install 'scicoda[ccd]' to use this functionality."
+            ) from ie
+        # Download and process the CCD data
+        _ = ccd()
+
     variants = ["aa", "non_aa"] if variant == "any" else [variant]
     comp_id = [comp_id] if isinstance(comp_id, str) else comp_id
     id_col = "id" if category == "chem_comp" else "comp_id"
     for var in variants:
         df = data.get(
-            "pdb",
+            _FILE_CATEGORY_NAME,
             name=f"ccd-{category}-{var}",
             extension="parquet",
             cache=cache,
