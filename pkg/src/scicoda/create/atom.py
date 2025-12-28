@@ -1,4 +1,4 @@
-"""Fetch and process atomic data."""
+"""Fetch and process atomic datasets."""
 
 import polars as pl
 
