@@ -1,4 +1,13 @@
-"""Update dataset files."""
+"""Update dataset files in the package data directory.
+
+This module provides functions to update the data files stored in the package.
+It downloads the latest data from online sources, processes it using the
+`scicoda.create` module functions, and saves the results to the package
+data directory as Parquet files for efficient storage and retrieval.
+
+The update functions are typically run during package development or maintenance
+to ensure that the bundled data is current.
+"""
 
 from pathlib import Path
 from typing import Any
