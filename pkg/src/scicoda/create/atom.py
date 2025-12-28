@@ -11,6 +11,12 @@ def periodic_table(
 ) -> pl.DataFrame:
     """Download and process the periodic table data from PubChem.
 
+    Fetch the periodic table data from PubChem,
+    clean the data and cast columns to appropriate types,
+    add additional columns such as period and group numbers,
+    add data from other sources (such as van der Waals radii from Blue Obelisk),
+    and return the processed data as a Polars DataFrame.
+
     Parameters
     ----------
     url
@@ -55,6 +61,11 @@ def periodic_table(
         Atomic mass of the element in unified atomic mass units (u).
     vdwr : int
         Atomic (van der Waals) radius of the element in picometers (pm).
+    vdwr_bo : int
+        Atomic (van der Waals) radius of the element in picometers (pm),
+        from the [Blue Obelisk Data Repository](https://github.com/AAriam/bodr/blob/29ce17071c71b2d4d5ee81a2a28f0407331f1624/bodr/elements/elements.xml).
+        For elements beyond atomic number 109 (Ds to Og),
+        a default value of 2.00 Å is used to fill in missing data.
     ie : float
         Ionization energy of the element in electronvolts (eV).§§§§
     ea : float
