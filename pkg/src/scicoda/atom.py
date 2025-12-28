@@ -5,6 +5,9 @@ import polars as pl
 from scicoda import data
 
 
+_FILE_CATEGORY_NAME = "atom"
+
+
 def autodock_atom_types(cache: bool = True) -> pl.DataFrame:
     """Get AutoDock4 atom types and their properties.
 
@@ -44,7 +47,12 @@ def autodock_atom_types(cache: bool = True) -> pl.DataFrame:
     If both are False, `hbond_count` is 0.
     """
     df = pl.DataFrame(
-        data.get_data("atom", "autodock_atom_types", cache=cache),
+        data.get_file(
+            _FILE_CATEGORY_NAME,
+            name="autodock_atom_types",
+            extension="json",
+            cache=cache
+        ),
         schema={
             "type": pl.Utf8,
             "element": pl.Utf8,
@@ -149,4 +157,9 @@ def periodic_table(cache: bool = True) -> pl.DataFrame:
     --------
     - [Mendeleev Python Package](https://mendeleev.readthedocs.io)
     """
-    return data.get("atom", name="periodic_table", extension="parquet", cache=cache)
+    return data.get_file(
+        _FILE_CATEGORY_NAME,
+        name="periodic_table",
+        extension="parquet",
+        cache=cache
+    )
