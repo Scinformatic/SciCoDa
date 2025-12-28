@@ -1,4 +1,4 @@
-"""Fetch and process data from the Protein Data Bank (PDB) web services."""
+"""Fetch and process datasets from the Protein Data Bank (PDB)."""
 
 import warnings
 
