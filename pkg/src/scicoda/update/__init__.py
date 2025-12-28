@@ -3,7 +3,6 @@
 from pathlib import Path
 from typing import Any
 
-from . import atom, pdb
 from scicoda.data import _data_dir
 
 
@@ -18,6 +17,8 @@ def update_all(data_dir: Path | str | None = None) -> dict[str, Any]:
         unless you want to generate data files
         in a custom location, without affecting the package data.
     """
+    from . import atom, pdb
+
     if data_dir is None:
         data_dir = _data_dir
     return {
