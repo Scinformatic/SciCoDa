@@ -43,6 +43,7 @@ downloaded from the PDB and saved locally for future use.
 
 ```python
 import scicoda
+import polars as pl
 
 # Get complete periodic table
 df = scicoda.atom.periodic_table()
@@ -87,7 +88,7 @@ print(atp_bonds)
 
 ### `scicoda.atom`
 
-#### `periodic_table(cache: bool = True) -> pl.DataFrame`
+#### `periodic_table() -> pl.DataFrame`
 
 Returns the periodic table with comprehensive element properties.
 
@@ -105,7 +106,7 @@ Returns the periodic table with comprehensive element properties.
 - `density`: Density (g/cm³)
 - And more...
 
-#### `autodock_atom_types(cache: bool = True) -> pl.DataFrame`
+#### `autodock_atom_types() -> pl.DataFrame`
 
 Returns AutoDock4 atom type definitions.
 
@@ -118,7 +119,7 @@ Returns AutoDock4 atom type definitions.
 
 ### `scicoda.pdb`
 
-#### `ccd(comp_id, category, variant, cache) -> pl.DataFrame`
+#### `ccd(comp_id, category, variant) -> pl.DataFrame`
 
 Retrieves data from the PDB Chemical Component Dictionary.
 
@@ -129,7 +130,6 @@ bundled and will be auto-downloaded on first use.
 - `comp_id` (str | list[str] | None): Component ID(s) to filter by
 - `category` (str): CCD category name (e.g., "chem_comp", "chem_comp_atom", "chem_comp_bond")
 - `variant` ("aa" | "non_aa" | "any"): Amino acid or non-amino acid components
-- `cache` (bool): Cache data in memory for faster subsequent access
 
 **Available Categories:**
 - `chem_comp`: Component summary information
@@ -182,7 +182,7 @@ df = scicoda.pdb.ccd(comp_id=["ATP", "ADP", "AMP"], category="chem_comp_atom")
 
 ## Requirements
 
-- Python ≥ 3.10
+- Python ≥ 3.12
 - polars ≥ 1.0
 - pkgdata ≥ 0.1
 - dfhelp == 0.0.1
