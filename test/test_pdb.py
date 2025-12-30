@@ -42,7 +42,7 @@ class TestCCD:
         # Should not raise errors for valid categories (may raise file not found)
         for cat in valid_categories:
             try:
-                _ = pdb.ccd(comp_id="ATP", category=cat, cache=False)
+                _ = pdb.ccd(comp_id="ATP", category=cat)
             except exception.ScicodaFileNotFoundError:
                 # File not found is acceptable in tests
                 pass
@@ -58,7 +58,7 @@ class TestCCD:
     def test_load_chem_comp(self):
         """Test loading chemical component data."""
         try:
-            df = pdb.ccd(comp_id="ATP", category="chem_comp", cache=False)
+            df = pdb.ccd(comp_id="ATP", category="chem_comp")
             assert isinstance(df, pl.DataFrame)
             assert len(df) > 0
             assert "id" in df.columns
@@ -77,7 +77,6 @@ class TestCCD:
             df = pdb.ccd(
                 comp_id=["ATP", "ADP", "AMP"],
                 category="chem_comp",
-                cache=False
             )
             assert isinstance(df, pl.DataFrame)
             assert len(df) >= 3  # Should have at least 3 components
@@ -93,7 +92,7 @@ class TestCCD:
     def test_load_all_components(self):
         """Test loading all components (no filter)."""
         try:
-            df = pdb.ccd(comp_id=None, category="chem_comp", variant="non_aa", cache=False)
+            df = pdb.ccd(comp_id=None, category="chem_comp", variant="non_aa")
             assert isinstance(df, pl.DataFrame)
             assert len(df) > 100  # Should have many components
         except exception.ScicodaFileNotFoundError:
@@ -108,7 +107,7 @@ class TestCCD:
     def test_amino_acid_variant(self):
         """Test loading amino acid variant."""
         try:
-            df = pdb.ccd(comp_id="ALA", category="chem_comp", variant="aa", cache=False)
+            df = pdb.ccd(comp_id="ALA", category="chem_comp", variant="aa")
             assert isinstance(df, pl.DataFrame)
             assert len(df) > 0
         except exception.ScicodaFileNotFoundError:
@@ -123,7 +122,7 @@ class TestCCD:
     def test_chem_comp_atom_columns(self):
         """Test that chem_comp_atom has expected columns."""
         try:
-            df = pdb.ccd(comp_id="ATP", category="chem_comp_atom", cache=False)
+            df = pdb.ccd(comp_id="ATP", category="chem_comp_atom")
             expected_cols = {"comp_id", "atom_id", "type_symbol"}
             assert expected_cols.issubset(set(df.columns))
         except exception.ScicodaFileNotFoundError:
@@ -138,7 +137,7 @@ class TestCCD:
     def test_chem_comp_bond_columns(self):
         """Test that chem_comp_bond has expected columns."""
         try:
-            df = pdb.ccd(comp_id="ATP", category="chem_comp_bond", cache=False)
+            df = pdb.ccd(comp_id="ATP", category="chem_comp_bond")
             expected_cols = {"comp_id", "atom_id_1", "atom_id_2"}
             assert expected_cols.issubset(set(df.columns))
         except exception.ScicodaFileNotFoundError:
