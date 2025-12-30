@@ -39,7 +39,7 @@ class TestGetFile:
 
     def test_json_file(self):
         """Test loading a JSON file."""
-        result = data.get_file("atom", "autodock_atom_types", extension="json", cache=False)
+        result = data.get_file("atom", "autodock_atom_types", extension="json")
         assert isinstance(result, list)
         # Should contain atom type data
         assert len(result) > 0
@@ -51,38 +51,9 @@ class TestGetFile:
     def test_unsupported_extension(self):
         """Test that unsupported extensions raise an error."""
         with pytest.raises(exception.ScicodaInputError) as exc_info:
-            data.get_file("atom", "autodock_atom_types", extension="txt", cache=False)
+            data.get_file("atom", "autodock_atom_types", extension="txt")
 
         assert "extension" in str(exc_info.value)
-
-    def test_caching(self):
-        """Test that caching works correctly."""
-        # Clear cache first
-        data._cache.clear()
-
-        # First call should load from file
-        result1 = data.get_file("atom", "autodock_atom_types", extension="json", cache=True)
-
-        # Second call should return cached version
-        result2 = data.get_file("atom", "autodock_atom_types", extension="json", cache=True)
-
-        # Should be the same object (cached)
-        assert result1 is result2
-
-        # Cache should contain the data
-        assert "atom" in data._cache
-        assert "autodock_atom_types" in data._cache["atom"]
-
-    def test_no_caching(self):
-        """Test that cache=False prevents caching."""
-        # Clear cache first
-        data._cache.clear()
-
-        # Load without caching
-        result = data.get_file("atom", "autodock_atom_types", extension="json", cache=False)
-
-        # Cache should be empty
-        assert len(data._cache.get("atom", {})) == 0
 
 
 class TestParquetLoading:
@@ -94,7 +65,7 @@ class TestParquetLoading:
     )
     def test_load_parquet_eager(self):
         """Test loading a Parquet file eagerly."""
-        result = data.get_file("atom", "periodic_table", extension="parquet", cache=False, lazy=False)
+        result = data.get_file("atom", "periodic_table", extension="parquet", lazy=False)
         assert isinstance(result, pl.DataFrame)
         assert len(result) > 0
         assert "symbol" in result.columns
@@ -105,7 +76,7 @@ class TestParquetLoading:
     )
     def test_load_parquet_lazy(self):
         """Test loading a Parquet file lazily."""
-        result = data.get_file("atom", "periodic_table", extension="parquet", cache=False, lazy=True)
+        result = data.get_file("atom", "periodic_table", extension="parquet", lazy=True)
         assert isinstance(result, pl.LazyFrame)
         # Collect to verify it's valid
         df = result.collect()
@@ -149,7 +120,7 @@ class TestDataValidation:
     def test_autodock_atom_types_schema_validation(self):
         """Test that autodock_atom_types data validates against its schema."""
         # Load data
-        data_content = data.get_file("atom", "autodock_atom_types", extension="json", cache=False)
+        data_content = data.get_file("atom", "autodock_atom_types", extension="json")
 
         # Load schema
         schema = self.load_schema("atom", "autodock_atom_types")
@@ -161,7 +132,7 @@ class TestDataValidation:
 
     def test_autodock_atom_types_data_structure(self):
         """Test the structure of autodock_atom_types data."""
-        data_content = data.get_file("atom", "autodock_atom_types", extension="json", cache=False)
+        data_content = data.get_file("atom", "autodock_atom_types", extension="json")
 
         assert isinstance(data_content, list)
         assert len(data_content) > 0
@@ -182,7 +153,7 @@ class TestDataValidation:
     def test_radii_vdw_blue_obelisk_schema_validation(self):
         """Test that radii_vdw_blue_obelisk data validates against its schema."""
         # Load data
-        data_content = data.get_file("atom", "radii_vdw_blue_obelisk", extension="json", cache=False)
+        data_content = data.get_file("atom", "radii_vdw_blue_obelisk", extension="json")
 
         # Load schema
         schema = self.load_schema("atom", "radii_vdw_blue_obelisk")
@@ -194,7 +165,7 @@ class TestDataValidation:
 
     def test_radii_vdw_blue_obelisk_data_structure(self):
         """Test the structure of radii_vdw_blue_obelisk data."""
-        data_content = data.get_file("atom", "radii_vdw_blue_obelisk", extension="json", cache=False)
+        data_content = data.get_file("atom", "radii_vdw_blue_obelisk", extension="json")
 
         assert isinstance(data_content, list)
         assert len(data_content) == 118  # Should have all 118 elements
@@ -214,7 +185,7 @@ class TestDataValidation:
 
     def test_radii_vdw_blue_obelisk_element_coverage(self):
         """Test that radii_vdw_blue_obelisk has data for all elements."""
-        data_content = data.get_file("atom", "radii_vdw_blue_obelisk", extension="json", cache=False)
+        data_content = data.get_file("atom", "radii_vdw_blue_obelisk", extension="json")
 
         # Extract element symbols
         elements = [item["element"] for item in data_content]
