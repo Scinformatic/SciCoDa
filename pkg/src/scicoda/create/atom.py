@@ -266,7 +266,11 @@ def periodic_table(
     ])
 
     # Add van der Waals radius column from Blue Obelisk data
-    vdwr_data = get_file("atom", "radii_vdw_blue_obelisk", "json", cache=False)
+    vdwr_data = get_file(
+        category="atom",
+        name="radii_vdw_blue_obelisk",
+        extension="json",
+    )
     # Create dataframe from list of dicts with "element" and "radius"
     df_vdwr_bo = pl.DataFrame(vdwr_data)
     # Join with periodic table using Symbol column
