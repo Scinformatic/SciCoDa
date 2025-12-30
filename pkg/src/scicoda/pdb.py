@@ -49,7 +49,7 @@ def ccd(
     Parameters
     ----------
     comp_id
-        Chemical component ID(s) to filter the table by.
+        Chemical component ID(s) to filter the table by (case-insensitive).
         If `None`, the entire table is loaded and returned,
         otherwise the table is scanned on disk,
         and only rows matching the specified component ID(s) are collected and returned.
@@ -117,6 +117,7 @@ def ccd(
 
     comp_id = [comp_id] if isinstance(comp_id, str) else comp_id
     id_col = "id" if category == "chem_comp" else "comp_id"
+    filterby = pl.col(id_col).is_in([cid.lower() for cid in comp_id])
     df: pl.DataFrame = pl.DataFrame()
 
     for var in variants:
@@ -125,7 +126,7 @@ def ccd(
             category=_FILE_CATEGORY_NAME,
             name=f"ccd-{category}-{var}",
             extension="parquet",
-            filterby=pl.col(id_col).is_in(comp_id),
+            filterby=filterby,
         )
         if not df.is_empty():
             return df
