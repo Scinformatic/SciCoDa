@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
 
 _data_dir = pkgdata.get_package_path_from_caller(top_level=True) / "data"
-_cache: dict[str, dict] = {}
 
 
 @overload
@@ -22,36 +21,21 @@ def get_file(
     category: str,
     name: str,
     extension: Literal["json"],
-    *,
-    lazy: bool = False,
-    cache: bool = True,
+    filterby: None = None,
 ) -> dict | list: ...
 @overload
 def get_file(
     category: str,
     name: str,
     extension: Literal["parquet"],
-    *,
-    lazy: Literal[False] = False,
-    cache: bool = True,
+    filterby: pl.Expr | None = None,
 ) -> pl.DataFrame: ...
-@overload
-def get_file(
-    category: str,
-    name: str,
-    extension: Literal["parquet"],
-    *,
-    lazy: Literal[True],
-    cache: bool = True,
-) -> pl.LazyFrame: ...
 def get_file(
     category: str,
     name: str,
     extension: Literal["json", "parquet"],
-    *,
-    lazy: bool = False,
-    cache: bool = True,
-) -> dict | list | pl.DataFrame | pl.LazyFrame:
+    filterby: pl.Expr | None = None,
+) -> dict | list | pl.DataFrame:
     """Get a data file from the package data.
 
     Parameters
@@ -64,12 +48,9 @@ def get_file(
         This corresponds to the function name that returns the data.
     extension
         File extension of the data file.
-    cache
-        Retain the data in memory after reading it
-        for faster access in subsequent calls.
-    lazy
-        If `extension` is "parquet",
-        return a `polars.LazyFrame` instead of a `polars.DataFrame`.
+    filterby
+        A Polars expression to filter the Parquet data on load.
+        Only applicable when `extension` is "parquet".
 
     Returns
     -------
@@ -82,22 +63,18 @@ def get_file(
     ScicodaInputError
         If an unsupported file extension is specified.
     """
-    if (cached := _cache.get(category, {}).get(name)) is not None:
-        return cached
     filepath = get_filepath(category=category, name=name, extension=extension)
     if extension == "json":
-        file = json.loads(filepath.read_text())
+        return json.loads(filepath.read_text())
     elif extension == "parquet":
-        file = pl.scan_parquet(filepath) if lazy else pl.read_parquet(filepath)
-    else:
-        raise exception.ScicodaInputError(
-            parameter="extension",
-            argument=extension,
-            message_detail="Unsupported file extension."
-        )
-    if cache:
-        _cache.setdefault(category, {})[name] = file
-    return file
+        if filterby is None:
+            return pl.read_parquet(filepath)
+        return pl.scan_parquet(filepath).filter(filterby).collect()
+    raise exception.ScicodaInputError(
+        parameter="extension",
+        argument=extension,
+        message_detail="Unsupported file extension."
+    )
 
 
 def get_filepath(category: str, name: str, extension: Literal["json", "parquet"]) -> Path:
