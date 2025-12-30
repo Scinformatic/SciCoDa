@@ -8,17 +8,11 @@ from scicoda import data
 _FILE_CATEGORY_NAME = "atom"
 
 
-def autodock_atom_types(cache: bool = True) -> pl.DataFrame:
+def autodock_atom_types() -> pl.DataFrame:
     """Get AutoDock4 atom types and their properties.
 
     These are used in the AutoDock4 software (e.g. AutoGrid4)
     and file formats (e.g. PDBQT, GPF).
-
-    Parameters
-    ----------
-    cache
-        Retain the data in memory after reading it
-        for faster access in subsequent calls.
 
     Returns
     -------
@@ -48,10 +42,9 @@ def autodock_atom_types(cache: bool = True) -> pl.DataFrame:
     """
     df = pl.DataFrame(
         data.get_file(
-            _FILE_CATEGORY_NAME,
+            category=_FILE_CATEGORY_NAME,
             name="autodock_atom_types",
             extension="json",
-            cache=cache
         ),
         schema={
             "type": pl.Utf8,
@@ -65,17 +58,11 @@ def autodock_atom_types(cache: bool = True) -> pl.DataFrame:
     return df
 
 
-def periodic_table(cache: bool = True) -> pl.DataFrame:
+def periodic_table() -> pl.DataFrame:
     """Get periodic table of chemical elements.
 
     All data is sourced from PubChem,
     unless otherwise noted.
-
-    Parameters
-    ----------
-    cache
-        Retain the data in memory after reading it
-        for faster access in subsequent calls.
 
     Returns
     -------
@@ -158,8 +145,7 @@ def periodic_table(cache: bool = True) -> pl.DataFrame:
     - [Mendeleev Python Package](https://mendeleev.readthedocs.io)
     """
     return data.get_file(
-        _FILE_CATEGORY_NAME,
+        category=_FILE_CATEGORY_NAME,
         name="periodic_table",
         extension="parquet",
-        cache=cache
     )
