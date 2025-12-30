@@ -26,9 +26,7 @@ _CCD_CATEGORY_NAMES: TypeAlias = Literal[
 def ccd(
     comp_id: str | Sequence[str] | None = None,
     category: _CCD_CATEGORY_NAMES = "chem_comp",
-    variant: Literal["aa", "non_aa", "any"] = "non_aa",
-    *,
-    cache: bool = True,
+    variant: Literal["aa", "non_aa", "any"] = "any",
 ) -> pl.DataFrame:
     """Get a table from the Chemical Component Dictionary (CCD) of the PDB.
 
@@ -62,17 +60,13 @@ def ccd(
         Variant of the CCD to retrieve; one of:
         - "aa": only standard amino acid components and their protonation variants
         - "non_aa": only non-amino acid components
-        - "any": search both variants for the specified `comp_id`(s)
-          If "any" is selected, `comp_id` must be specified.
+        - "any": both amino acid and non-amino acid components
 
         Note that while the raw CCD data contains amino acid components
         in both the main CCD and the protonation variants companion dictionary,
         here, they are separated such that
         the "aa" variant only contains amino acid components,
         and the "non_aa" variant only contains non-amino acid components.
-    cache
-        Retain the data in memory after reading it
-        for faster access in subsequent calls.
 
     Returns
     -------
@@ -88,15 +82,7 @@ def ccd(
                 f"CCD data category must be one of: {', '.join(get_type_args(_CCD_CATEGORY_NAMES))}."
             )
         )
-    # Validate variant parameter - "any" requires comp_id to be specified
-    if comp_id is None and variant == "any":
-        raise exception.ScicodaInputError(
-            parameter="variant",
-            argument=variant,
-            message_detail=(
-                "When 'any' variant is selected, 'comp_id' must be specified."
-            )
-        )
+
     # Check if CCD data files exist; if not, download and process them
     try:
         data.get_filepath(
@@ -104,7 +90,7 @@ def ccd(
             name=f"ccd-chem_comp-aa",
             extension="parquet",
         )
-    except exception.ScicodaFileNotFoundError as e:
+    except exception.ScicodaFileNotFoundError:
         try:
             from scicoda.update.pdb import ccd
         except ImportError as ie:
@@ -118,32 +104,31 @@ def ccd(
         _ = ccd()
 
     variants = ["aa", "non_aa"] if variant == "any" else [variant]
+
+    if comp_id is None:
+        dfs = [
+            data.get_file(
+                category=_FILE_CATEGORY_NAME,
+                name=f"ccd-{category}-{var}",
+                extension="parquet",
+            ) for var in variants
+        ]
+        return pl.concat(dfs, how="vertical")
+
     comp_id = [comp_id] if isinstance(comp_id, str) else comp_id
     id_col = "id" if category == "chem_comp" else "comp_id"
+    df: pl.DataFrame = pl.DataFrame()
 
-    df_collected: pl.DataFrame = pl.DataFrame()
     for var in variants:
-        if comp_id is None:
-            # Load entire table eagerly when no filter is specified
-            return data.get_file(
-                _FILE_CATEGORY_NAME,
-                name=f"ccd-{category}-{var}",
-                extension="parquet",
-                cache=cache,
-                lazy=False,
-            )
-        else:
-            # Use lazy loading and filter when comp_id is specified
-            df_lazy = data.get_file(
-                _FILE_CATEGORY_NAME,
-                name=f"ccd-{category}-{var}",
-                extension="parquet",
-                cache=cache,
-                lazy=True,
-            )
-            df_collected = df_lazy.filter(pl.col(id_col).is_in(comp_id)).collect()
-            if not df_collected.is_empty():
-                return df_collected
+        # Use lazy loading and filter when comp_id is specified
+        df = data.get_file(
+            category=_FILE_CATEGORY_NAME,
+            name=f"ccd-{category}-{var}",
+            extension="parquet",
+            filterby=pl.col(id_col).is_in(comp_id),
+        )
+        if not df.is_empty():
+            return df
 
     # Return empty DataFrame with columns if no matches found
-    return df_collected
+    return df
