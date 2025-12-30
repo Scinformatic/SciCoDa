@@ -94,8 +94,8 @@ class TestPeriodicTable:
 
         # Lanthanides (except La) and actinides (except Ac) should have null group
         # La and Ac are considered part of group 3
-        assert lanthanides["group"].null_count() == len(lanthanides)
-        assert actinides["group"].null_count() == len(actinides)
+        assert lanthanides["group"].null_count() == len(lanthanides) - 1
+        assert actinides["group"].null_count() == len(actinides) - 1
 
     @pytest.mark.online
     @pytest.mark.slow
