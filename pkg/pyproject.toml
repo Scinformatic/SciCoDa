@@ -48,7 +48,7 @@ classifiers = [
 [project.optional-dependencies]
 ccd = [
     "pdbapi >=0.2.0,<0.3",
-    "ciffile >=0.2.0,<0.3",
+    "ciffile >=0.2.1,<0.3",
 ]
 dev = [
     "pytest >=7.0",
