@@ -7,12 +7,9 @@ from scicoda.update import update_all
 @pytest.fixture(scope="class")
 def update_all_data(tmp_path_factory):
     """Fixture that calls update_all() once and caches the result for all tests in the class."""
-    try:
-        tmpdir = tmp_path_factory.mktemp("update_all")
-        result = update_all(data_dir=str(tmpdir))
-        return result, tmpdir
-    except Exception as e:
-        pytest.skip(f"Update failed: {e}")
+    tmpdir = tmp_path_factory.mktemp("update_all")
+    result = update_all(data_dir=str(tmpdir))
+    return result, tmpdir
 
 
 @pytest.mark.online
