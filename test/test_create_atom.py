@@ -9,21 +9,18 @@ class TestPeriodicTable:
     """Tests for periodic_table function in create module."""
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_returns_dataframe(self):
         """Test that the function returns a Polars DataFrame."""
         df = create_atom.periodic_table()
         assert isinstance(df, pl.DataFrame)
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_element_count(self):
         """Test that all 118 elements are present."""
         df = create_atom.periodic_table()
         assert len(df) == 118
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_has_expected_columns(self):
         """Test that the DataFrame has all expected columns."""
         df = create_atom.periodic_table()
@@ -36,7 +33,6 @@ class TestPeriodicTable:
         assert set(df.columns) == expected_cols
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_sorted_by_atomic_number(self):
         """Test that elements are sorted by atomic number."""
         df = create_atom.periodic_table()
@@ -44,7 +40,6 @@ class TestPeriodicTable:
         assert z_values == list(range(1, 119))
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_hydrogen_properties(self):
         """Test that Hydrogen has correct properties."""
         df = create_atom.periodic_table()
@@ -57,7 +52,6 @@ class TestPeriodicTable:
         assert h["group"][0] == 1
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_carbon_properties(self):
         """Test that Carbon has correct properties."""
         df = create_atom.periodic_table()
@@ -71,7 +65,6 @@ class TestPeriodicTable:
         assert c["block"][0] == "nonmetal"
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_noble_gases(self):
         """Test that noble gases have correct group assignment."""
         df = create_atom.periodic_table()
@@ -85,7 +78,6 @@ class TestPeriodicTable:
         assert len(noble_gases) >= 6
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_lanthanides_actinides_no_group(self):
         """Test that lanthanides and actinides have null group."""
         df = create_atom.periodic_table()
@@ -98,7 +90,6 @@ class TestPeriodicTable:
         assert actinides["group"].null_count() == len(actinides) - 1
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_period_assignments(self):
         """Test that period assignments are correct."""
         df = create_atom.periodic_table()
@@ -110,7 +101,6 @@ class TestPeriodicTable:
         assert (df.filter((pl.col("z") > 86) & (pl.col("z") <= 118))["period"] == 7).all()
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_oxidation_states_format(self):
         """Test that oxidation states are properly formatted."""
         df = create_atom.periodic_table()
@@ -118,11 +108,11 @@ class TestPeriodicTable:
         # Carbon should have common oxidation states
         c = df.filter(pl.col("symbol") == "C")
         ox_states = c["oxstates"][0]
-        assert isinstance(ox_states, list)
+        assert isinstance(ox_states, pl.Series)
+        assert ox_states.dtype == pl.Int8
         assert len(ox_states) > 0
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_standard_states(self):
         """Test that standard states are properly categorized."""
         df = create_atom.periodic_table()
@@ -135,7 +125,6 @@ class TestPeriodicTable:
         assert (df["state"] == "solid").sum() > 80
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_vdw_radii_present(self):
         """Test that van der Waals radii are present."""
         df = create_atom.periodic_table()
@@ -145,7 +134,6 @@ class TestPeriodicTable:
         assert df["vdwr_bo"].null_count() < 20
 
     @pytest.mark.online
-    @pytest.mark.slow
     def test_custom_url(self):
         """Test that custom URL parameter works."""
         # Use the default URL
