@@ -8,11 +8,7 @@ from scicoda.create import pdb as create_pdb
 @pytest.fixture(scope="class")
 def ccd_data(request):
     """Fixture that calls create_pdb.ccd() once and caches the result for all tests in the class."""
-    try:
-        result = create_pdb.ccd()
-        return result
-    except Exception as e:
-        pytest.skip(f"CCD creation failed: {e}")
+    return create_pdb.ccd()
 
 
 @pytest.mark.online
