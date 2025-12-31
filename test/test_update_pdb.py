@@ -7,11 +7,22 @@ from scicoda.update import pdb as update_pdb
 import tempfile
 
 
+@pytest.fixture(scope="class")
+def ccd_data(request):
+    """Fixture that calls update_pdb.ccd() once and caches the result for all tests in the class."""
+    try:
+        tmpdir = tempfile.mkdtemp()
+        result = update_pdb.ccd(data_dir=tmpdir)
+        return result, tmpdir
+    except Exception as e:
+        pytest.skip(f"CCD update failed: {e}")
+
+
+@pytest.mark.online
+@pytest.mark.slow
 class TestUpdateAll:
     """Tests for update_all function."""
 
-    @pytest.mark.online
-    @pytest.mark.slow
     def test_returns_dict(self):
         """Test that update_all returns a dictionary."""
         try:
@@ -23,82 +34,64 @@ class TestUpdateAll:
             pytest.skip(f"Update failed: {e}")
 
 
+@pytest.mark.online
+@pytest.mark.slow
 class TestCCD:
-    """Tests for ccd update function."""
+    """Tests for ccd update function.
 
-    @pytest.mark.online
-    @pytest.mark.slow
-    def test_returns_tuple(self):
+    All tests in this class share the same CCD data loaded once via the ccd_data fixture.
+    """
+
+    def test_returns_tuple(self, ccd_data):
         """Test that ccd returns a tuple of (dict, dict)."""
-        try:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                result = update_pdb.ccd(data_dir=tmpdir)
-                assert isinstance(result, tuple)
-                assert len(result) == 2
+        result, _ = ccd_data
+        assert isinstance(result, tuple)
+        assert len(result) == 2
 
-                file_dict, problems = result
-                assert isinstance(file_dict, dict)
-                assert isinstance(problems, dict)
-        except Exception as e:
-            pytest.skip(f"CCD update failed: {e}")
+        file_dict, problems = result
+        assert isinstance(file_dict, dict)
+        assert isinstance(problems, dict)
 
-    @pytest.mark.online
-    @pytest.mark.slow
-    def test_creates_parquet_files(self):
+    def test_creates_parquet_files(self, ccd_data):
         """Test that ccd creates parquet files."""
-        try:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                file_dict, _ = update_pdb.ccd(data_dir=tmpdir)
+        result, _ = ccd_data
+        file_dict, _ = result
 
-                # Check that files were created
-                assert len(file_dict) > 0
+        # Check that files were created
+        assert len(file_dict) > 0
 
-                for filepath, df in file_dict.items():
-                    assert filepath.exists()
-                    assert filepath.suffix == ".parquet"
-                    assert isinstance(df, pl.DataFrame)
-        except Exception as e:
-            pytest.skip(f"CCD update failed: {e}")
+        for filepath, df in file_dict.items():
+            assert filepath.exists()
+            assert filepath.suffix == ".parquet"
+            assert isinstance(df, pl.DataFrame)
 
-    @pytest.mark.online
-    @pytest.mark.slow
-    def test_creates_aa_and_non_aa_variants(self):
+    def test_creates_aa_and_non_aa_variants(self, ccd_data):
         """Test that both aa and non_aa variants are created."""
-        try:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                file_dict, _ = update_pdb.ccd(data_dir=tmpdir)
+        result, _ = ccd_data
+        file_dict, _ = result
 
-                # Check for aa and non_aa files
-                filepaths = [str(fp) for fp in file_dict.keys()]
+        # Check for aa and non_aa files
+        filepaths = [str(fp) for fp in file_dict.keys()]
 
-                aa_files = [fp for fp in filepaths if "-aa." in fp]
-                non_aa_files = [fp for fp in filepaths if "-non_aa." in fp]
+        aa_files = [fp for fp in filepaths if "-aa." in fp]
+        non_aa_files = [fp for fp in filepaths if "-non_aa." in fp]
 
-                assert len(aa_files) > 0, "No amino acid variant files created"
-                assert len(non_aa_files) > 0, "No non-amino acid variant files created"
+        assert len(aa_files) > 0, "No amino acid variant files created"
+        assert len(non_aa_files) > 0, "No non-amino acid variant files created"
 
-                # Should have same number of files for each variant
-                assert len(aa_files) == len(non_aa_files)
-        except Exception as e:
-            pytest.skip(f"CCD update failed: {e}")
+        # Should have same number of files for each variant
+        assert len(aa_files) == len(non_aa_files)
 
-    @pytest.mark.online
-    @pytest.mark.slow
-    def test_chem_comp_files_created(self):
+    def test_chem_comp_files_created(self, ccd_data):
         """Test that chem_comp files are created."""
-        try:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                file_dict, _ = update_pdb.ccd(data_dir=tmpdir)
+        result, _ = ccd_data
+        file_dict, _ = result
 
-                filepaths = [str(fp) for fp in file_dict.keys()]
-                chem_comp_files = [fp for fp in filepaths if "chem_comp-" in fp]
+        filepaths = [str(fp) for fp in file_dict.keys()]
+        chem_comp_files = [fp for fp in filepaths if "chem_comp-" in fp]
 
-                assert len(chem_comp_files) >= 2  # At least aa and non_aa
-        except Exception as e:
-            pytest.skip(f"CCD update failed: {e}")
+        assert len(chem_comp_files) >= 2  # At least aa and non_aa
 
-    @pytest.mark.online
-    @pytest.mark.slow
     def test_custom_basepath(self):
         """Test that custom basepath works."""
         try:
@@ -116,32 +109,22 @@ class TestCCD:
         except Exception as e:
             pytest.skip(f"CCD update failed: {e}")
 
-    @pytest.mark.online
-    @pytest.mark.slow
-    def test_files_can_be_read(self):
+    def test_files_can_be_read(self, ccd_data):
         """Test that created parquet files can be read."""
-        try:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                file_dict, _ = update_pdb.ccd(data_dir=tmpdir)
+        result, _ = ccd_data
+        file_dict, _ = result
 
-                # Read one file to verify it's valid
-                filepath = list(file_dict.keys())[0]
-                df_read = pl.read_parquet(filepath)
+        # Read one file to verify it's valid
+        filepath = list(file_dict.keys())[0]
+        df_read = pl.read_parquet(filepath)
 
-                assert isinstance(df_read, pl.DataFrame)
-                assert len(df_read) > 0
-        except Exception as e:
-            pytest.skip(f"CCD update failed: {e}")
+        assert isinstance(df_read, pl.DataFrame)
+        assert len(df_read) > 0
 
-    @pytest.mark.online
-    @pytest.mark.slow
-    def test_problems_reported(self):
+    def test_problems_reported(self, ccd_data):
         """Test that problems dictionary is returned."""
-        try:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                _, problems = update_pdb.ccd(data_dir=tmpdir)
+        result, _ = ccd_data
+        _, problems = result
 
-                # Problems should be a dict (may be empty)
-                assert isinstance(problems, dict)
-        except Exception as e:
-            pytest.skip(f"CCD update failed: {e}")
+        # Problems should be a dict (may be empty)
+        assert isinstance(problems, dict)
