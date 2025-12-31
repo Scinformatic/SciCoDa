@@ -2,15 +2,14 @@
 
 import pytest
 from scicoda.update import update_all
-import tempfile
 
 
 @pytest.fixture(scope="class")
-def update_all_data(request):
+def update_all_data(tmp_path_factory):
     """Fixture that calls update_all() once and caches the result for all tests in the class."""
     try:
-        tmpdir = tempfile.mkdtemp()
-        result = update_all(data_dir=tmpdir)
+        tmpdir = tmp_path_factory.mktemp("update_all")
+        result = update_all(data_dir=str(tmpdir))
         return result, tmpdir
     except Exception as e:
         pytest.skip(f"Update failed: {e}")
