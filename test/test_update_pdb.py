@@ -8,12 +8,9 @@ from scicoda.update import pdb as update_pdb
 @pytest.fixture(scope="class")
 def ccd_data(tmp_path_factory):
     """Fixture that calls update_pdb.ccd() once and caches the result for all tests in the class."""
-    try:
-        tmpdir = tmp_path_factory.mktemp("ccd")
-        result = update_pdb.ccd(data_dir=str(tmpdir))
-        return result, tmpdir
-    except Exception as e:
-        pytest.skip(f"CCD update failed: {e}")
+    tmpdir = tmp_path_factory.mktemp("ccd")
+    result = update_pdb.ccd(data_dir=str(tmpdir))
+    return result, tmpdir
 
 
 @pytest.mark.online
@@ -23,12 +20,9 @@ class TestUpdateAll:
 
     def test_returns_dict(self, tmp_path):
         """Test that update_all returns a dictionary."""
-        try:
-            result = update_pdb.update_all(data_dir=str(tmp_path))
-            assert isinstance(result, dict)
-            assert "ccd" in result
-        except Exception as e:
-            pytest.skip(f"Update failed: {e}")
+        result = update_pdb.update_all(data_dir=str(tmp_path))
+        assert isinstance(result, dict)
+        assert "ccd" in result
 
 
 @pytest.mark.online
@@ -91,19 +85,16 @@ class TestCCD:
 
     def test_custom_basepath(self, tmp_path):
         """Test that custom basepath works."""
-        try:
-            custom_basepath = "custom/ccd_data"
-            file_dict, _ = update_pdb.ccd(
-                data_dir=str(tmp_path),
-                basepath=custom_basepath
-            )
+        custom_basepath = "custom/ccd_data"
+        file_dict, _ = update_pdb.ccd(
+            data_dir=str(tmp_path),
+            basepath=custom_basepath
+        )
 
-            # Check that custom path is used
-            filepaths = [str(fp) for fp in file_dict.keys()]
-            assert any("custom" in fp for fp in filepaths)
-            assert any("ccd_data" in fp for fp in filepaths)
-        except Exception as e:
-            pytest.skip(f"CCD update failed: {e}")
+        # Check that custom path is used
+        filepaths = [str(fp) for fp in file_dict.keys()]
+        assert any("custom" in fp for fp in filepaths)
+        assert any("ccd_data" in fp for fp in filepaths)
 
     def test_files_can_be_read(self, ccd_data):
         """Test that created parquet files can be read."""
