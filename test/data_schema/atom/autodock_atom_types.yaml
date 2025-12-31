@@ -1,3 +1,4 @@
+$schema: https://json-schema.org/draft/2020-12/schema
 title: AutoDock Atom Types
 summary: AutoDock4 atom types and their properties.
 description: |
