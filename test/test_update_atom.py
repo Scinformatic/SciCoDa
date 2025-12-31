@@ -2,28 +2,26 @@
 
 import pytest
 import polars as pl
-from pathlib import Path
 from scicoda.update import atom as update_atom
-import tempfile
 
 
 @pytest.fixture(scope="class")
-def update_all_data(request):
+def update_all_data(tmp_path_factory):
     """Fixture that calls update_atom.update_all() once and caches the result for all tests in the class."""
     try:
-        tmpdir = tempfile.mkdtemp()
-        result = update_atom.update_all(data_dir=tmpdir)
+        tmpdir = tmp_path_factory.mktemp("update_all")
+        result = update_atom.update_all(data_dir=str(tmpdir))
         return result, tmpdir
     except Exception as e:
         pytest.skip(f"Update all failed: {e}")
 
 
 @pytest.fixture(scope="class")
-def periodic_table_data(request):
+def periodic_table_data(tmp_path_factory):
     """Fixture that calls update_atom.periodic_table() once and caches the result for all tests in the class."""
     try:
-        tmpdir = tempfile.mkdtemp()
-        result = update_atom.periodic_table(data_dir=tmpdir)
+        tmpdir = tmp_path_factory.mktemp("periodic_table")
+        result = update_atom.periodic_table(data_dir=str(tmpdir))
         return result, tmpdir
     except Exception as e:
         pytest.skip(f"Periodic table update failed: {e}")
@@ -89,31 +87,29 @@ class TestPeriodicTable:
         assert "symbol" in df.columns
         assert "name" in df.columns
 
-    def test_custom_filepath(self):
+    def test_custom_filepath(self, tmp_path):
         """Test that custom filepath works."""
-        with tempfile.TemporaryDirectory() as tmpdir:
-            custom_path = "custom/path/my_table.parquet"
-            result = update_atom.periodic_table(
-                data_dir=tmpdir,
-                filepath=custom_path
-            )
+        custom_path = "custom/path/my_table.parquet"
+        result = update_atom.periodic_table(
+            data_dir=str(tmp_path),
+            filepath=custom_path
+        )
 
-            filepath = list(result.keys())[0]
-            assert "custom" in str(filepath)
-            assert "my_table.parquet" in str(filepath)
-            assert filepath.exists()
+        filepath = list(result.keys())[0]
+        assert "custom" in str(filepath)
+        assert "my_table.parquet" in str(filepath)
+        assert filepath.exists()
 
-    def test_custom_url(self):
+    def test_custom_url(self, tmp_path):
         """Test that custom URL parameter works."""
-        with tempfile.TemporaryDirectory() as tmpdir:
-            result = update_atom.periodic_table(
-                data_dir=tmpdir,
-                url="https://pubchem.ncbi.nlm.nih.gov/rest/pug/periodictable/CSV"
-            )
+        result = update_atom.periodic_table(
+            data_dir=str(tmp_path),
+            url="https://pubchem.ncbi.nlm.nih.gov/rest/pug/periodictable/CSV"
+        )
 
-            filepath, df = list(result.items())[0]
-            assert isinstance(df, pl.DataFrame)
-            assert len(df) == 118
+        filepath, df = list(result.items())[0]
+        assert isinstance(df, pl.DataFrame)
+        assert len(df) == 118
 
     def test_file_can_be_read(self, periodic_table_data):
         """Test that the created parquet file can be read."""
