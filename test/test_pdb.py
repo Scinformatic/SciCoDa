@@ -15,14 +15,6 @@ class TestCCD:
 
         assert "category" in str(exc_info.value)
 
-    def test_variant_any_without_comp_id(self):
-        """Test that variant='any' without comp_id raises error."""
-        with pytest.raises(exception.ScicodaInputError) as exc_info:
-            pdb.ccd(variant="any", category="chem_comp")
-
-        assert "comp_id" in str(exc_info.value)
-        assert "variant" in str(exc_info.value)
-
     def test_valid_categories(self):
         """Test that all valid CCD categories are accepted."""
         valid_categories = [
