@@ -1,8 +1,19 @@
 """Tests for the atom module."""
 
+import json
+from pathlib import Path
+
 import pytest
 import polars as pl
+import yaml
+import jsonschema
+
 from scicoda import atom
+
+
+# Paths to schema and data directories
+SCHEMA_DIR = Path(__file__).parent / "data_schema" / "atom"
+DATA_DIR = Path(__file__).parent.parent / "pkg" / "src" / "scicoda" / "data" / "atom"
 
 
 class TestAutodockAtomTypes:
@@ -127,3 +138,72 @@ class TestPeriodicTable:
         assert len(o) == 1
         assert o["z"][0] == 8
         assert o["name"][0] == "oxygen"
+
+
+class TestAtomDataSchemaValidation:
+    """Tests for validating atom data files against their JSON schemas."""
+
+    @pytest.fixture
+    def autodock_schema(self):
+        """Load the AutoDock atom types JSON schema."""
+        schema_path = SCHEMA_DIR / "autodock_atom_types.yaml"
+        with open(schema_path, "r") as f:
+            return yaml.safe_load(f)
+
+    @pytest.fixture
+    def autodock_data(self):
+        """Load the AutoDock atom types data file."""
+        data_path = DATA_DIR / "autodock_atom_types.json"
+        with open(data_path, "r") as f:
+            return json.load(f)
+
+    @pytest.fixture
+    def radii_vdw_schema(self):
+        """Load the VdW radii JSON schema."""
+        schema_path = SCHEMA_DIR / "radii_vdw_blue_obelisk.yaml"
+        with open(schema_path, "r") as f:
+            return yaml.safe_load(f)
+
+    @pytest.fixture
+    def radii_vdw_data(self):
+        """Load the VdW radii data file."""
+        data_path = DATA_DIR / "radii_vdw_blue_obelisk.json"
+        with open(data_path, "r") as f:
+            return json.load(f)
+
+    def test_autodock_atom_types_valid_schema(self, autodock_schema, autodock_data):
+        """Test that autodock_atom_types.json validates against its schema."""
+        jsonschema.validate(instance=autodock_data, schema=autodock_schema)
+
+    def test_autodock_atom_types_is_array(self, autodock_data):
+        """Test that the AutoDock data is a non-empty array."""
+        assert isinstance(autodock_data, list)
+        assert len(autodock_data) > 0
+
+    def test_autodock_atom_types_required_fields(self, autodock_data):
+        """Test that each entry has all required fields."""
+        required_fields = {"type", "element", "hbond_acceptor", "hbond_donor", "hbond_count"}
+        for entry in autodock_data:
+            assert required_fields.issubset(set(entry.keys()))
+
+    def test_radii_vdw_valid_schema(self, radii_vdw_schema, radii_vdw_data):
+        """Test that radii_vdw_blue_obelisk.json validates against its schema."""
+        jsonschema.validate(instance=radii_vdw_data, schema=radii_vdw_schema)
+
+    def test_radii_vdw_has_118_elements(self, radii_vdw_data):
+        """Test that the VdW radii data contains exactly 118 elements."""
+        assert len(radii_vdw_data) == 118
+
+    def test_radii_vdw_required_fields(self, radii_vdw_data):
+        """Test that each entry has element and radius fields."""
+        for entry in radii_vdw_data:
+            assert "element" in entry
+            assert "radius" in entry
+            assert isinstance(entry["element"], str)
+            assert isinstance(entry["radius"], int)
+            assert entry["radius"] > 0
+
+    def test_radii_vdw_element_symbols(self, radii_vdw_data):
+        """Test that element symbols have valid length."""
+        for entry in radii_vdw_data:
+            assert 1 <= len(entry["element"]) <= 2
