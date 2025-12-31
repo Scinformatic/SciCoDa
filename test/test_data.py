@@ -50,7 +50,7 @@ class TestGetFile:
 
     def test_unsupported_extension(self):
         """Test that unsupported extensions raise an error.
-        
+
         Note: Since file lookup happens before extension validation,
         unsupported extensions will raise ScicodaFileNotFoundError
         because the file with that extension doesn't exist.
