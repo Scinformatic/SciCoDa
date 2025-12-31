@@ -91,7 +91,7 @@ def ccd() -> tuple[
                     pl.max_horizontal("atom_id_1", "atom_id_2").alias("atom_id_2"),
                 )
 
-            category_dfs.setdefault(cat_name, []).append(cat.df)
+            category_dfs.setdefault(cat_name, []).append(cat_df)
             if ccd_variant == "protonation" and cat_name == "chem_comp":
                 amino_acid_comp_ids.update(cat.df[id_col].to_list())
 
@@ -126,7 +126,7 @@ def ccd() -> tuple[
         )
         n_conflicts = len(conflicts)
         if n_conflicts > 0:
-            problems.setdefault("merge", {})[cat_name] = conflicts
+            problems.setdefault("merge", {})[cat_name] = {"conflicts": conflicts}
             warnings.warn(
                 f"Found {n_conflicts} conflicting rows in category '{cat_name}' of CCD variants; "
                 f"keeping first occurrence.",
