@@ -1,7 +1,12 @@
 """Tests for the pdb module."""
 
+from pathlib import Path
+
+import dfhelp.schema
 import pytest
 import polars as pl
+import yaml
+
 from scicoda import pdb, data, exception
 from scicoda.update import pdb as update_pdb
 
@@ -111,3 +116,39 @@ class TestCCD:
         df = pdb.ccd(comp_id="ATP", category="chem_comp_bond")
         expected_cols = {"comp_id", "atom_id_1", "atom_id_2"}
         assert expected_cols.issubset(set(df.columns))
+
+    @pytest.mark.parametrize("category", [
+        "chem_comp",
+        "chem_comp_atom",
+        "chem_comp_bond",
+        "pdbx_chem_comp_atom_related",
+        "pdbx_chem_comp_audit",
+        "pdbx_chem_comp_descriptor",
+        "pdbx_chem_comp_feature",
+        "pdbx_chem_comp_identifier",
+        "pdbx_chem_comp_pcm",
+        "pdbx_chem_comp_related",
+        "pdbx_chem_comp_synonyms",
+    ])
+    def test_category_schema(self, category):
+        """Test that each CCD category has all expected columns with correct types.
+
+        Schema definitions are loaded from YAML files in test/data_schema/pdb/.
+        """
+        def load_schema(category: str) -> dict[str, dict]:
+            """Load expected schema from YAML file for a CCD category."""
+            # Convert category name to filename (e.g., chem_comp -> ccd_chem_comp.yaml)
+            SCHEMA_DIR = Path(__file__).parent / "data_schema" / "pdb"
+            filename = f"ccd-{category}.yaml"
+            schema_path = SCHEMA_DIR / filename
+            with open(schema_path) as f:
+                schema_data = yaml.safe_load(f)
+            return schema_data
+
+        # Load expected schema from YAML file
+        expected_schema = load_schema(category)
+
+        # Load DataFrame
+        df = pdb.ccd()
+
+        assert dfhelp.schema.dict_to_schema(expected_schema) == df.schema, f"Schema validation failed for '{category}'"
