@@ -8,11 +8,7 @@ from scicoda.create import atom as create_atom
 @pytest.fixture(scope="class")
 def periodic_table_data(request):
     """Fixture that calls create_atom.periodic_table() once and caches the result for all tests in the class."""
-    try:
-        result = create_atom.periodic_table()
-        return result
-    except Exception as e:
-        pytest.skip(f"Periodic table creation failed: {e}")
+    return create_atom.periodic_table()
 
 
 @pytest.mark.online
