@@ -8,23 +8,17 @@ from scicoda.update import atom as update_atom
 @pytest.fixture(scope="class")
 def update_all_data(tmp_path_factory):
     """Fixture that calls update_atom.update_all() once and caches the result for all tests in the class."""
-    try:
-        tmpdir = tmp_path_factory.mktemp("update_all")
-        result = update_atom.update_all(data_dir=str(tmpdir))
-        return result, tmpdir
-    except Exception as e:
-        pytest.skip(f"Update all failed: {e}")
+    tmpdir = tmp_path_factory.mktemp("update_all")
+    result = update_atom.update_all(data_dir=str(tmpdir))
+    return result, tmpdir
 
 
 @pytest.fixture(scope="class")
 def periodic_table_data(tmp_path_factory):
     """Fixture that calls update_atom.periodic_table() once and caches the result for all tests in the class."""
-    try:
-        tmpdir = tmp_path_factory.mktemp("periodic_table")
-        result = update_atom.periodic_table(data_dir=str(tmpdir))
-        return result, tmpdir
-    except Exception as e:
-        pytest.skip(f"Periodic table update failed: {e}")
+    tmpdir = tmp_path_factory.mktemp("periodic_table")
+    result = update_atom.periodic_table(data_dir=str(tmpdir))
+    return result, tmpdir
 
 
 @pytest.mark.online
