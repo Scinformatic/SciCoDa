@@ -18,7 +18,8 @@ def ccd_files(tmp_path_factory):
     Called once per test class; temp directory is cleaned up automatically by pytest.
     """
     tmpdir = tmp_path_factory.mktemp("ccd_data")
-    update_pdb.ccd(data_dir=str(tmpdir))
+    # Use basepath="ccd" so files are created as tmpdir/ccd-{cat}-{variant}.parquet
+    update_pdb.ccd(data_dir=str(tmpdir), basepath="ccd")
     return tmpdir
 
 
@@ -37,6 +38,7 @@ class TestCCD:
 
         def patched_get_filepath(category, name, extension):
             if category == "pdb":
+                # Files are named ccd-{cat_name}-{variant}.parquet
                 return ccd_files / f"{name}.{extension}"
             return original_get_filepath(category, name, extension)
 
@@ -149,6 +151,6 @@ class TestCCD:
         expected_schema = load_schema(category)
 
         # Load DataFrame
-        df = pdb.ccd()
+        df = pdb.ccd(category=category)
 
         assert dfhelp.schema.dict_to_schema(expected_schema) == df.schema, f"Schema validation failed for '{category}'"
