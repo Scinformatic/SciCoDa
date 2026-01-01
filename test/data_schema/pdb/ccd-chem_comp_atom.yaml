@@ -1,0 +1,57 @@
+atom_id:
+  dtype: String
+comp_id:
+  dtype: String
+alt_atom_id:
+  dtype: String
+charge:
+  dtype: Int64
+model_cartn_x:
+  dtype: Float64
+model_cartn_y:
+  dtype: Float64
+model_cartn_z:
+  dtype: Float64
+pdbx_align:
+  dtype: Int64
+pdbx_aromatic_flag:
+  dtype: Boolean
+pdbx_backbone_atom_flag:
+  dtype: Boolean
+pdbx_c_terminal_atom_flag:
+  dtype: Boolean
+pdbx_component_atom_id:
+  dtype: String
+pdbx_component_comp_id:
+  dtype: String
+pdbx_component_id:
+  dtype: Int64
+pdbx_leaving_atom_flag:
+  dtype: Boolean
+pdbx_model_cartn_x_ideal:
+  dtype: Float64
+pdbx_model_cartn_y_ideal:
+  dtype: Float64
+pdbx_model_cartn_z_ideal:
+  dtype: Float64
+pdbx_n_terminal_atom_flag:
+  dtype: Boolean
+pdbx_ordinal:
+  dtype: Int64
+pdbx_polymer_type:
+  dtype: Enum
+  categories:
+    - polymer
+    - non-polymer
+    - ''
+pdbx_residue_numbering:
+  dtype: Int64
+pdbx_stereo_config:
+  dtype: Enum
+  categories:
+    - r
+    - s
+    - n
+    - ''
+type_symbol:
+  dtype: String

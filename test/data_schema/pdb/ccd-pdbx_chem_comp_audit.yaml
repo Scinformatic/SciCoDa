@@ -1,0 +1,38 @@
+action_type:
+  dtype: Enum
+  categories:
+    - Create component
+    - Modify name
+    - Modify formula
+    - Modify synonyms
+    - Modify linking type
+    - Modify internal type
+    - Modify metal description
+    - Modify parent residue
+    - Modify processing site
+    - Modify subcomponent list
+    - Modify one letter code
+    - Modify model coordinates code
+    - Modify formal charge
+    - Modify atom id
+    - Modify charge
+    - Modify aromatic_flag
+    - Modify leaving atom flag
+    - Modify component atom id
+    - Modify component comp_id
+    - Modify value order
+    - Modify descriptor
+    - Modify identifier
+    - Modify coordinates
+    - Modify backbone
+    - Modify PCM
+    - Other modification
+    - Obsolete component
+    - Initial release
+    - ''
+comp_id:
+  dtype: String
+date:
+  dtype: Date
+processing_site:
+  dtype: String

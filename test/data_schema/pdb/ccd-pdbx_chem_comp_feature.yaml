@@ -1,0 +1,16 @@
+comp_id:
+  dtype: String
+source:
+  dtype: String
+type:
+  dtype: Enum
+  categories:
+    - CARBOHYDRATE ANOMER
+    - CARBOHYDRATE ISOMER
+    - CARBOHYDRATE RING
+    - CARBOHYDRATE PRIMARY CARBONYL GROUP
+    - ''
+value:
+  dtype: String
+support:
+  dtype: String

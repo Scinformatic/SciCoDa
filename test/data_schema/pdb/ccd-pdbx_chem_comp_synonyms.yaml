@@ -1,0 +1,18 @@
+comp_id:
+  dtype: String
+ordinal:
+  dtype: Int64
+name:
+  dtype: String
+provenance:
+  dtype: Enum
+  categories:
+    - AUTHOR
+    - DRUGBANK
+    - CHEBI
+    - CHEMBL
+    - PDB
+    - PUBCHEM
+    - ''
+type:
+  dtype: String

@@ -1,0 +1,29 @@
+atom_id_1:
+  dtype: String
+atom_id_2:
+  dtype: String
+comp_id:
+  dtype: String
+pdbx_aromatic_flag:
+  dtype: Boolean
+pdbx_ordinal:
+  dtype: Int64
+pdbx_stereo_config:
+  dtype: Enum
+  categories:
+    - e
+    - z
+    - n
+    - ''
+value_order:
+  dtype: Enum
+  categories:
+    - sing
+    - doub
+    - trip
+    - quad
+    - arom
+    - poly
+    - delo
+    - pi
+    - ''

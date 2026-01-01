@@ -1,0 +1,96 @@
+id:
+  dtype: String
+formula:
+  dtype: String
+formula_weight:
+  dtype: Float64
+mon_nstd_parent_comp_id:
+  dtype: String
+name:
+  dtype: String
+one_letter_code:
+  dtype: String
+pdbx_ambiguous_flag:
+  dtype: String
+pdbx_formal_charge:
+  dtype: Int64
+pdbx_ideal_coordinates_details:
+  dtype: String
+pdbx_ideal_coordinates_missing_flag:
+  dtype: Boolean
+pdbx_initial_date:
+  dtype: Date
+pdbx_model_coordinates_db_code:
+  dtype: String
+pdbx_model_coordinates_details:
+  dtype: String
+pdbx_model_coordinates_missing_flag:
+  dtype: Boolean
+pdbx_modified_date:
+  dtype: Date
+pdbx_pcm:
+  dtype: Boolean
+pdbx_processing_site:
+  dtype: Enum
+  categories:
+    - PDBE
+    - EBI
+    - PDBJ
+    - PDBC
+    - RCSB
+    - ''
+pdbx_release_status:
+  dtype: Enum
+  categories:
+    - REL
+    - HOLD
+    - HPUB
+    - OBS
+    - DEL
+    - REF_ONLY
+    - ''
+pdbx_replaced_by:
+  dtype: String
+pdbx_replaces:
+  dtype: String
+pdbx_subcomponent_list:
+  dtype: String
+pdbx_synonyms:
+  dtype: String
+pdbx_type:
+  dtype: String
+three_letter_code:
+  dtype: String
+type:
+  dtype: Enum
+  categories:
+    - d-peptide linking
+    - l-peptide linking
+    - d-peptide nh3 amino terminus
+    - l-peptide nh3 amino terminus
+    - d-peptide cooh carboxy terminus
+    - l-peptide cooh carboxy terminus
+    - dna linking
+    - rna linking
+    - l-rna linking
+    - l-dna linking
+    - dna oh 5 prime terminus
+    - rna oh 5 prime terminus
+    - dna oh 3 prime terminus
+    - rna oh 3 prime terminus
+    - d-saccharide, beta linking
+    - d-saccharide, alpha linking
+    - l-saccharide, beta linking
+    - l-saccharide, alpha linking
+    - l-saccharide
+    - d-saccharide
+    - saccharide
+    - non-polymer
+    - peptide linking
+    - peptide-like
+    - l-gamma-peptide, c-delta linking
+    - d-gamma-peptide, c-delta linking
+    - l-beta-peptide, c-gamma linking
+    - d-beta-peptide, c-gamma linking
+    - other
+    - ''

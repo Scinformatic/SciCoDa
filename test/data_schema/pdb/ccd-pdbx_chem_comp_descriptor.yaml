@@ -1,0 +1,26 @@
+comp_id:
+  dtype: String
+program:
+  dtype: String
+program_version:
+  dtype: String
+type:
+  dtype: Enum
+  categories:
+    - smiles_cannonical
+    - smiles_canonical
+    - smiles
+    - inchi
+    - inchi_main
+    - inchi_main_formula
+    - inchi_main_connect
+    - inchi_main_hatom
+    - inchi_charge
+    - inchi_stereo
+    - inchi_isotope
+    - inchi_fixedh
+    - inchi_reconnect
+    - inchikey
+    - ''
+descriptor:
+  dtype: String

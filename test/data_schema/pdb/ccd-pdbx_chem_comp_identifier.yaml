@@ -1,0 +1,24 @@
+comp_id:
+  dtype: String
+program:
+  dtype: String
+program_version:
+  dtype: String
+type:
+  dtype: Enum
+  categories:
+    - COMMON NAME
+    - SYSTEMATIC NAME
+    - CAS REGISTRY NUMBER
+    - PUBCHEM Identifier
+    - MDL Identifier
+    - SYNONYM
+    - CONDENSED IUPAC CARB SYMBOL
+    - IUPAC CARB SYMBOL
+    - SNFG CARB SYMBOL
+    - CONDENSED IUPAC CARBOHYDRATE SYMBOL
+    - IUPAC CARBOHYDRATE SYMBOL
+    - SNFG CARBOHYDRATE SYMBOL
+    - ''
+identifier:
+  dtype: String

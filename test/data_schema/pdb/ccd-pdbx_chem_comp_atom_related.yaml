@@ -1,0 +1,16 @@
+comp_id:
+  dtype: String
+ordinal:
+  dtype: Int64
+related_comp_id:
+  dtype: String
+atom_id:
+  dtype: String
+related_atom_id:
+  dtype: String
+related_type:
+  dtype: Enum
+  categories:
+    - Carbohydrate core
+    - Precursor
+    - ''

@@ -1,0 +1,238 @@
+pcm_id:
+  dtype: Int64
+category:
+  dtype: Enum
+  categories:
+    - ADP-ribose
+    - Amino acid
+    - Biotin
+    - Carbohydrate
+    - Chromophore/chromophore-like
+    - Covalent chemical modification
+    - Crosslinker
+    - Flavin
+    - Heme/heme-like
+    - Lipid/lipid-like
+    - Named protein modification
+    - Non-standard residue
+    - Nucleotide monophosphate
+    - Terminal acetylation
+    - Terminal amidation
+    - Metal coordination
+    - ''
+comp_id:
+  dtype: String
+comp_id_linking_atom:
+  dtype: String
+modified_residue_id:
+  dtype: String
+modified_residue_id_linking_atom:
+  dtype: String
+polypeptide_position:
+  dtype: Enum
+  categories:
+    - C-terminal
+    - N-terminal
+    - Any position
+    - ''
+position:
+  dtype: Enum
+  categories:
+    - Amino-acid side chain
+    - Amino-acid backbone
+    - Amino-acid side chain and backbone
+    - ''
+type:
+  dtype: Enum
+  categories:
+    - 12-Hydroxyfarnesylation
+    - 12-Oxomyristoylation
+    - 12R-Hydroxymyristoylation
+    - 14-Hydroxy-10,13-dioxo-7-heptadecenoic acid
+    - (3-Aminopropyl)(5'-adenosyl)phosphono amidation
+    - 2-Aminoadipylation
+    - 2-Aminoethylphosphorylation
+    - 2-Cholinephosphorylation
+    - 2-Hydroxyisobutyrylation
+    - 2-Oxo-5,5-dimethylhexanoylation
+    - 2-Oxobutanoic acid
+    - 2,3-Dicarboxypropylation
+    - 3-Oxoalanine
+    - 3-Phenyllactic acid
+    - (3R)-3-Hydroxybutyrylation
+    - 4-Phosphopantetheine
+    - ADP-ribosylation
+    - ADP-riboxanation
+    - AMPylation
+    - Acetamidation
+    - Acetamidomethylation
+    - Acetylation
+    - Alanylation
+    - Allysine
+    - Amination
+    - Arachidoylation
+    - Archaeol
+    - Arginylation
+    - Arsenylation
+    - Asparaginylation
+    - Aspartylation
+    - Bacillithiolation
+    - Benzoylation
+    - Benzylation
+    - Beta-amino acid
+    - Beta-hydroxybutyrylation
+    - Beta-lysylation
+    - Beta-mercaptoethanol
+    - Biotinylation
+    - Bromination
+    - Butyrylation
+    - Carbamoylation
+    - Carboxyethylation
+    - Carboxylation
+    - Carboxymethylation
+    - cGMPylation
+    - Chlorination
+    - Cholesterylation
+    - Citrullination
+    - Crotonylation
+    - Cyanation
+    - Cysteinylation
+    - C-Mannosylation
+    - Deamidation
+    - Decanoylation
+    - Decarboxylation
+    - Dehydroamino acid
+    - Dehydrocoelenterazination
+    - Dehydrogenation
+    - Dehydroxylation
+    - Deoxidation
+    - Deoxyhypusine
+    - Diacylglycerol
+    - Dihydroxyacetonation
+    - Dimethylamination
+    - Diphosphorylation
+    - Diphthamide
+    - Dipyrromethane methylation
+    - Dopaminylation
+    - D-alanylation
+    - D-arginylation
+    - D-asparaginylation
+    - D-aspartylation
+    - D-cysteinylation
+    - D-glutaminylation
+    - D-glutamylation
+    - D-histidinylation
+    - D-isoleucylation
+    - D-lactate
+    - D-leucylation
+    - D-lysylation
+    - D-methionylation
+    - D-phenylalanylation
+    - D-prolylation
+    - D-serylation
+    - D-threoninylation
+    - D-tryptophanylation
+    - D-tyrosination
+    - D-valylation
+    - Ethylation
+    - Ethylsulfanylation
+    - Farnesylation
+    - Fluorination
+    - Formylation
+    - GMPylation
+    - Geranylgeranylation
+    - Glutaminylation
+    - Glutamylation
+    - Glutarylation
+    - Glutathionylation
+    - Glycerophosphorylation
+    - Glycerylphosphorylethanolamination
+    - Glycylation
+    - Heptanoylation
+    - Hexanoylation
+    - Histaminylation
+    - Histidinylation
+    - Hydrogenation
+    - Hydroperoxylation
+    - Hydroxyamination
+    - Hydroxyethylation
+    - Hydroxylation
+    - Hydroxymethylation
+    - Hydroxysulfanylation
+    - Hypusine
+    - Iodination
+    - Isoleucylation
+    - Lactoylation
+    - Laurylation
+    - Leucylation
+    - Lipoylation
+    - L-lactate
+    - Lysylation
+    - Malonylation
+    - Methacrylation
+    - Methionylation
+    - Methoxylation
+    - Methylamination
+    - Methylation
+    - Methylsulfanylation
+    - Methylsulfation
+    - Myristoylation
+    - N6-benzoyllysine
+    - N6-isonicotinyllysine
+    - N6-methacryllysine
+    - N-pyruvic acid 2-iminylation
+    - N-methylcarbamoylation
+    - Nitration
+    - Nitrosylation
+    - None
+    - Noradrenylation
+    - Norleucine
+    - Norvaline
+    - N-Glycosylation
+    - Octanoylation
+    - Oleoylation
+    - Ornithine
+    - Oxidation
+    - O-Glycosylation
+    - Palmitoleoylation
+    - Palmitoylation
+    - Pentadecanoylation
+    - Pentanoylation
+    - Phenylalanylation
+    - Phosphatidylethanolamine amidation
+    - Phosphoenolpyruvate
+    - Phosphorylation
+    - Prolylation
+    - Propionylation
+    - Pyridoxal phosphate
+    - Pyrrolidone carboxylic acid
+    - Pyruvic acid
+    - Retinoylation
+    - Selanylation
+    - Selenomethionine
+    - Serotonylation
+    - Serylation
+    - Stearoylation
+    - Stereoisomerisation
+    - Succinamide ring
+    - Succination
+    - Succinylation
+    - Sulfanylmethylation
+    - Sulfation
+    - Sulfhydration
+    - S-Glycosylation
+    - Tert-butylation
+    - Tert-butyloxycarbonylation
+    - Threoninylation
+    - Thyroxine
+    - Triiodothyronine
+    - Triphosphorylation
+    - Tryptophanylation
+    - Tyrosination
+    - UMPylation
+    - Valylation
+    - ''
+uniprot_generic_ptm_accession:
+  dtype: String
+uniprot_specific_ptm_accession:
+  dtype: String

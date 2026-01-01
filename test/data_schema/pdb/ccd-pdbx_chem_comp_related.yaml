@@ -1,0 +1,12 @@
+comp_id:
+  dtype: String
+related_comp_id:
+  dtype: String
+relationship_type:
+  dtype: Enum
+  categories:
+    - Carbohydrate core
+    - Precursor
+    - ''
+details:
+  dtype: String
